@@ -1,20 +1,24 @@
 <script setup lang="ts">
 
 import { TableService } from '@/services/table.service'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { LootlogBattleRecordDTO } from '@/api/api'
 import AdvanceTable from '@/components/AdvanceTable.vue'
 import Column from '@/components/Column.vue'
+import { useRoute } from 'vue-router'
 
 const tableService = new TableService();
 
 const tableData = ref();
+
+const route = useRoute();
 
 const loadTable = (page: number = 0) => {
   tableService.fetch({
     page,
     size: 30,
     sort: 'createdAt,desc',
+    npcRank: route.params.npcRank as 'NORMAL' | 'ELITE' | 'ELITE_II' | 'ELITE_III' | 'HERO' | 'TITAN'
   }).then((data) => {
     if(!data.content) return;
     tableData.value = data
@@ -25,6 +29,7 @@ onMounted(() => {
   loadTable();
 })
 
+watch(() => route.params.npcRank, () => loadTable())
 
 const changePage = (targetPage: number) => {
   loadTable(targetPage);

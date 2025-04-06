@@ -12,13 +12,19 @@ const routes = [
   //   component: Style,
   // },
   {
-    // Document title tag
-    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
     meta: {
       title: 'Dashboard',
     },
     path: '/',
     name: 'dashboard',
+    component: Home,
+  },
+  {
+    meta: {
+      title: 'Lootlog',
+    },
+    path: '/lootlog/:npcRank',
+    name: 'lootlog',
     component: Home,
   },
   // {
@@ -61,14 +67,14 @@ const routes = [
   //   name: 'responsive',
   //   component: () => import('@/views/ResponsiveView.vue'),
   // },
-  // {
-  //   meta: {
-  //     title: 'Login',
-  //   },
-  //   path: '/login',
-  //   name: 'login',
-  //   component: () => import('@/views/LoginView.vue'),
-  // },
+  {
+    meta: {
+      title: 'Login',
+    },
+    path: '/login',
+    name: 'login',
+    component: () => import('@/pages/LoginView.vue'),
+  },
   // {
   //   meta: {
   //     title: 'Error',

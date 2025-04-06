@@ -19,7 +19,8 @@ export class TableService {
     maxCharacterLvl?: number
     page?: number
     size?: number
-    sort?: string[]
+    sort?: string[],
+    npcRank?: 'NORMAL' | 'ELITE' | 'ELITE_II' | 'ELITE_III' | 'HERO' | 'TITAN'
   }) {
     return apiClient.lootlog.getAll(params)
   }

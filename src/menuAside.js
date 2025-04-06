@@ -12,12 +12,35 @@ import {
   mdiPalette,
   mdiReact,
 } from '@mdi/js'
+import router from '@/router/index.js'
 
 export default [
+  // {
+  //   to: '/',
+  //   icon: mdiMonitor,
+  //   label: 'Dashboard',
+  // },
   {
-    to: '/',
-    icon: mdiMonitor,
-    label: 'Dashboard',
+    label: 'Lootlog',
+    icon: mdiViewList,
+    menu: [
+      {
+        label: 'Elity',
+        to: '/lootlog/ELITE'
+      },
+      {
+        label: 'Elity II',
+        to: '/lootlog/ELITE_II'
+      },
+      {
+        label: 'Herosi',
+        to: '/lootlog/HERO'
+      },
+      {
+        label: 'Tytani',
+        to: '/lootlog/TITAN'
+      },
+    ],
   },
   // {
   //   to: '/tables',
@@ -77,10 +100,10 @@ export default [
   //   icon: mdiGithub,
   //   target: '_blank',
   // },
-  {
-    href: 'https://margatron.ovh',
-    label: 'Margatron',
-    icon: mdiReact,
-    target: '_blank',
-  },
+  // {
+  //   href: 'https://margatron.ovh',
+  //   label: 'Margatron',
+  //   icon: mdiReact,
+  //   target: '_blank',
+  // },
 ]
