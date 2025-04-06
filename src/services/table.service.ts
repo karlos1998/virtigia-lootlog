@@ -1,16 +1,7 @@
 import { Api } from '@/api/api' // ścieżka do wygenerowanego pliku api.ts
-import type { PageBattleRecordDTO } from '@/api/api' // import typów
 
-// Utwórz instancję API
 const apiClient = new Api({
-  // baseUrl: 'https://engine-retro.margatron.ovh', // lub inny URL jeśli potrzebujesz
-  baseUrl: 'https://mbp-karol-java.letscode.it', // lub inny URL jeśli potrzebujesz
-  baseApiParams: {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    }
-  },
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 })
 
 export class TableService {
