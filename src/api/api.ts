@@ -17,23 +17,23 @@ export interface ErrorResponse {
 /** Allocation of loot - who got what item */
 export interface AssignedItem {
   /** Loot id in loot window. It's just the id in the window for assigning a specific item. */
-  lootItemId?: string
+  lootItemId: string
   /**
    * Base id of the item that can be found in the map editor
    * @format int64
    */
-  baseItemId?: number
+  baseItemId: number
   /** Item name */
-  baseItemName?: string
+  baseItemName: string
   /**
    * Id of items created in the bag. This is a list because when we get a consumable item, it can connect us with another existing item in the bag and add a second one if there is a maximum number of uses.
    * @uniqueItems true
    */
-  itemIds?: string[]
+  itemIds: string[]
   /** Id of the hero who got the item */
-  characterId?: string
+  characterId: string
   /** Character name */
-  characterName?: string
+  characterName: string
 }
 
 export interface BaseItemDTO {
@@ -89,11 +89,11 @@ export interface ItemAttributes {
 
 /** List of items in the loot window */
 export interface LootItemDTO {
-  id?: string
-  item?: BaseItemDTO
-  wantCharacterIds?: string[]
-  dontCharacterIds?: string[]
-  needCharacterIds?: string[]
+  id: string
+  item: BaseItemDTO
+  wantCharacterIds: string[]
+  dontCharacterIds: string[]
+  needCharacterIds: string[]
 }
 
 export interface LootlogBattleRecordDTO {
@@ -118,13 +118,13 @@ export interface LootlogCharacterLiteDTO {
 
 export type LootsAllocationDTO = {
   /** List of characters who got the loot window */
-  characters?: CharacterLiteDTO[]
+  characters: CharacterLiteDTO[]
   /** List of items in the loot window */
-  items?: LootItemDTO[]
+  items: LootItemDTO[]
   /** Id of characters who confirmed the loot window before the time expired */
-  confirmedCharacterIds?: string[]
+  confirmedCharacterIds: string[]
   /** Allocation of loot - who got what item */
-  assignedItems?: AssignedItem[]
+  assignedItems: AssignedItem[]
 } | null
 
 export interface NpcDTO {
@@ -356,6 +356,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         minNpcLvl?: number
         /** @format int32 */
         maxNpcLvl?: number
+        npcRank?: 'NORMAL' | 'ELITE' | 'ELITE_II' | 'ELITE_III' | 'HERO' | 'TITAN'
         /** @format int32 */
         minCharacterLvl?: number
         /** @format int32 */

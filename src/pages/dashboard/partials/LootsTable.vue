@@ -49,6 +49,16 @@ type SlotProps = {
         {{ row.characters.map(character => `${character.name} (${character.lvl}${character.profession})`).join(', ') }}
       </template>
     </Column>
+    <Column header="Zdobycze" name="characters">
+      <template #body="{ row }: SlotProps">
+        <div v-if="row.lootsAllocation">
+          <div v-for="item in row.lootsAllocation.assignedItems">
+            {{item.baseItemName}} - {{item.characterName}}
+          </div>
+        </div>
+        <div v-else>-</div>
+      </template>
+    </Column>
     <Column header="Data" name="createdAt">
       <template #body="{ row }: SlotProps">
         {{ new Date(row.createdAt).toLocaleString() }}

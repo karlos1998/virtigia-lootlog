@@ -34,20 +34,20 @@ export interface components {
         /** @description Allocation of loot - who got what item */
         AssignedItem: {
             /** @description Loot id in loot window. It's just the id in the window for assigning a specific item. */
-            lootItemId?: string;
+            lootItemId: string;
             /**
              * Format: int64
              * @description Base id of the item that can be found in the map editor
              */
-            baseItemId?: number;
+            baseItemId: number;
             /** @description Item name */
-            baseItemName?: string;
+            baseItemName: string;
             /** @description Id of items created in the bag. This is a list because when we get a consumable item, it can connect us with another existing item in the bag and add a second one if there is a maximum number of uses. */
-            itemIds?: string[];
+            itemIds: string[];
             /** @description Id of the hero who got the item */
-            characterId?: string;
+            characterId: string;
             /** @description Character name */
-            characterName?: string;
+            characterName: string;
         };
         BaseItemDTO: {
             /** Format: int64 */
@@ -64,25 +64,15 @@ export interface components {
             /** @enum {string} */
             rarity?: "common" | "unique" | "heroic" | "legendary" | "upgraded" | "artefact";
         };
-        BattleRecordDTO: {
-            id?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            characters?: components["schemas"]["CharacterLiteDTO"][];
-            npcs?: components["schemas"]["NpcDTO"][];
-            attackerId?: string;
-            attackerType?: string;
-            lootsAllocation?: components["schemas"]["LootsAllocationDTO"];
-        };
         /** @description List of characters who got the loot window */
         CharacterLiteDTO: {
-            id?: string;
-            name?: string;
-            src?: string;
+            id: string;
+            name: string;
+            src: string;
             /** Format: int32 */
             lvl?: number;
             /** @enum {string} */
-            profession?: "p" | "w" | "t" | "h" | "m" | "b";
+            profession: "p" | "w" | "t" | "h" | "m" | "b";
         };
         ItemAttributes: {
             attributes?: {
@@ -91,48 +81,61 @@ export interface components {
         };
         /** @description List of items in the loot window */
         LootItemDTO: {
-            id?: string;
-            item?: components["schemas"]["BaseItemDTO"];
-            wantCharacterIds?: string[];
-            dontCharacterIds?: string[];
-            needCharacterIds?: string[];
+            id: string;
+            item: components["schemas"]["BaseItemDTO"];
+            wantCharacterIds: string[];
+            dontCharacterIds: string[];
+            needCharacterIds: string[];
+        };
+        LootlogBattleRecordDTO: {
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            characters: components["schemas"]["LootlogCharacterLiteDTO"][];
+            npcs: components["schemas"]["NpcDTO"][];
+            attackerId: string;
+            attackerType: string;
+            lootsAllocation?: components["schemas"]["LootsAllocationDTO"];
+        };
+        LootlogCharacterLiteDTO: {
+            id: string;
+            name: string;
+            src: string;
+            /** Format: int32 */
+            lvl?: number;
+            /** @enum {string} */
+            profession: "p" | "w" | "t" | "h" | "m" | "b";
         };
         LootsAllocationDTO: {
             /** @description List of characters who got the loot window */
-            characters?: components["schemas"]["CharacterLiteDTO"][];
+            characters: components["schemas"]["CharacterLiteDTO"][];
             /** @description List of items in the loot window */
-            items?: components["schemas"]["LootItemDTO"][];
+            items: components["schemas"]["LootItemDTO"][];
             /** @description Id of characters who confirmed the loot window before the time expired */
-            confirmedCharacterIds?: string[];
+            confirmedCharacterIds: string[];
             /** @description Allocation of loot - who got what item */
-            assignedItems?: components["schemas"]["AssignedItem"][];
+            assignedItems: components["schemas"]["AssignedItem"][];
         } | null;
         NpcDTO: {
             /** Format: int64 */
-            id?: number;
+            id: number;
             /** Format: int64 */
-            mapId?: number;
-            name?: string;
-            src?: string;
+            mapId: number;
+            name: string;
+            src: string;
             /** Format: int32 */
-            x?: number;
+            x: number;
             /** Format: int32 */
-            y?: number;
+            y: number;
             /** Format: int32 */
-            lvl?: number;
-            /** Format: int32 */
-            type?: number;
-            /** Format: int32 */
-            wt?: number;
+            lvl: number;
             /** @enum {string} */
-            rank?: "NORMAL" | "ELITE" | "ELITE_II" | "ELITE_III" | "HERO" | "TITAN";
+            rank: "NORMAL" | "ELITE" | "ELITE_II" | "ELITE_III" | "HERO" | "TITAN";
             /** @enum {string} */
-            profession?: "p" | "w" | "t" | "h" | "m" | "b";
-            /** Format: int32 */
-            groupId?: number;
-            inGroup?: boolean;
+            profession: "p" | "w" | "t" | "h" | "m" | "b";
+            inGroup: boolean;
         };
-        PageBattleRecordDTO: {
+        PageLootlogBattleRecordDTO: {
             /** Format: int32 */
             totalPages?: number;
             /** Format: int64 */
@@ -141,7 +144,7 @@ export interface components {
             last?: boolean;
             /** Format: int32 */
             size?: number;
-            content?: components["schemas"]["BattleRecordDTO"][];
+            content?: components["schemas"]["LootlogBattleRecordDTO"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
@@ -182,6 +185,7 @@ export interface operations {
                 characterName?: string;
                 minNpcLvl?: number;
                 maxNpcLvl?: number;
+                npcRank?: "NORMAL" | "ELITE" | "ELITE_II" | "ELITE_III" | "HERO" | "TITAN";
                 minCharacterLvl?: number;
                 maxCharacterLvl?: number;
                 /** @description Zero-based page index (0..N) */
@@ -203,7 +207,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageBattleRecordDTO"];
+                    "*/*": components["schemas"]["PageLootlogBattleRecordDTO"];
                 };
             };
             /** @description Bad Request */
