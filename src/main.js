@@ -26,6 +26,10 @@ import { useDarkModeStore } from './stores/darkMode'
 
 const darkModeStore = useDarkModeStore(pinia)
 
+if(!localStorage['darkMode']) {
+  localStorage.setItem('darkMode', '1');
+}
+
 if (
   (!localStorage['darkMode'] && window.matchMedia('(prefers-color-scheme: dark)').matches) ||
   localStorage['darkMode'] === '1'
