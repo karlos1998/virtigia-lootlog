@@ -10,10 +10,9 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": ["vite/client", "node"],
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"],
-      "~/*": ["./*"]
+      "@/*": ["src/*"]
     },
     "typeRoots": ["node_modules/@types", "src/types"],
     "noEmit": true,

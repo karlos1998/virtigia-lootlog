@@ -73,25 +73,14 @@ export interface BaseItemDTO {
   rarity?: 'common' | 'unique' | 'heroic' | 'legendary' | 'upgraded' | 'artefact'
 }
 
-export interface BattleRecordDTO {
-  id?: string
-  /** @format date-time */
-  createdAt?: string
-  characters?: CharacterLiteDTO[]
-  npcs?: NpcDTO[]
-  attackerId?: string
-  attackerType?: string
-  lootsAllocation?: LootsAllocationDTO
-}
-
 /** List of characters who got the loot window */
 export interface CharacterLiteDTO {
-  id?: string
-  name?: string
-  src?: string
+  id: string
+  name: string
+  src: string
   /** @format int32 */
   lvl?: number
-  profession?: 'p' | 'w' | 't' | 'h' | 'm' | 'b'
+  profession: 'p' | 'w' | 't' | 'h' | 'm' | 'b'
 }
 
 export interface ItemAttributes {
@@ -107,6 +96,26 @@ export interface LootItemDTO {
   needCharacterIds?: string[]
 }
 
+export interface LootlogBattleRecordDTO {
+  id: string
+  /** @format date-time */
+  createdAt: string
+  characters: LootlogCharacterLiteDTO[]
+  npcs: NpcDTO[]
+  attackerId: string
+  attackerType: string
+  lootsAllocation?: LootsAllocationDTO
+}
+
+export interface LootlogCharacterLiteDTO {
+  id: string
+  name: string
+  src: string
+  /** @format int32 */
+  lvl?: number
+  profession: 'p' | 'w' | 't' | 'h' | 'm' | 'b'
+}
+
 export type LootsAllocationDTO = {
   /** List of characters who got the loot window */
   characters?: CharacterLiteDTO[]
@@ -120,29 +129,23 @@ export type LootsAllocationDTO = {
 
 export interface NpcDTO {
   /** @format int64 */
-  id?: number
+  id: number
   /** @format int64 */
-  mapId?: number
-  name?: string
-  src?: string
+  mapId: number
+  name: string
+  src: string
   /** @format int32 */
-  x?: number
+  x: number
   /** @format int32 */
-  y?: number
+  y: number
   /** @format int32 */
-  lvl?: number
-  /** @format int32 */
-  type?: number
-  /** @format int32 */
-  wt?: number
-  rank?: 'NORMAL' | 'ELITE' | 'ELITE_II' | 'ELITE_III' | 'HERO' | 'TITAN'
-  profession?: 'p' | 'w' | 't' | 'h' | 'm' | 'b'
-  /** @format int32 */
-  groupId?: number
-  inGroup?: boolean
+  lvl: number
+  rank: 'NORMAL' | 'ELITE' | 'ELITE_II' | 'ELITE_III' | 'HERO' | 'TITAN'
+  profession: 'p' | 'w' | 't' | 'h' | 'm' | 'b'
+  inGroup: boolean
 }
 
-export interface PageBattleRecordDTO {
+export interface PageLootlogBattleRecordDTO {
   /** @format int32 */
   totalPages?: number
   /** @format int64 */
@@ -151,7 +154,7 @@ export interface PageBattleRecordDTO {
   last?: boolean
   /** @format int32 */
   size?: number
-  content?: BattleRecordDTO[]
+  content?: LootlogBattleRecordDTO[]
   /** @format int32 */
   number?: number
   sort?: SortObject
@@ -374,7 +377,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       },
       params: RequestParams = {},
     ) =>
-      this.request<PageBattleRecordDTO, ErrorResponse>({
+      this.request<PageLootlogBattleRecordDTO, ErrorResponse>({
         path: `/lootlog/api/battle-records`,
         method: 'GET',
         query: query,
