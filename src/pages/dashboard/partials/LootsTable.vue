@@ -13,7 +13,7 @@ const tableData = ref();
 const loadTable = (page: number = 0) => {
   tableService.fetch({
     page,
-    size: 100,
+    size: 30,
     sort: 'createdAt,desc',
   }).then((data) => {
     if(!data.content) return;
