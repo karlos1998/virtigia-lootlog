@@ -75,6 +75,14 @@ const routes = [
     name: 'login',
     component: () => import('@/pages/LoginView.vue'),
   },
+  {
+    meta: {
+      title: 'Login Callback',
+    },
+    path: '/login/callback',
+    name: 'login-callback',
+    component: () => import('@/pages/LoginCallback.vue'),
+  },
   // {
   //   meta: {
   //     title: 'Error',
