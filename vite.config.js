@@ -44,6 +44,20 @@ export default defineConfig({
             type: 'image/png',
             purpose: 'any maskable'
           }
+        ],
+        screenshots: [
+          {
+            src: '/screen-desktop-1.png',
+            sizes: '1536x1024',
+            type: 'image/png',
+            form_factor: 'wide'
+          },
+          {
+            src: '/screen-mobile-1.png',
+            sizes: '1024x1536',
+            type: 'image/png',
+            form_factor: 'narrow'
+          }
         ]
       },
       workbox: {
