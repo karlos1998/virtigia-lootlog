@@ -19,6 +19,7 @@ export default defineConfig({
         'apple-touch-icon.png'
       ],
       manifest: {
+        id: '/',
         name: 'LootLog Margatron',
         short_name: 'LootLog',
         description: 'LootLog Margatron as PWA',
