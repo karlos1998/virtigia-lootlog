@@ -11,6 +11,7 @@ import NavBar from '@/components/NavBar.vue'
 import NavBarItemPlain from '@/components/NavBarItemPlain.vue'
 import AsideMenu from '@/components/AsideMenu.vue'
 import FooterBar from '@/components/FooterBar.vue'
+import InstallPrompt from '@/components/InstallPrompt.vue'
 
 const layoutAsidePadding = 'xl:pl-60'
 
@@ -81,4 +82,6 @@ const menuClick = (event, item) => {
       </FooterBar>
     </div>
   </div>
+
+  <InstallPrompt/>
 </template>
