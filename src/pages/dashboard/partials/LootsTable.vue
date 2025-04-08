@@ -5,16 +5,29 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { LootlogBattleRecordDTO } from '@/api/api'
 import AdvanceTable from '@/components/AdvanceTable.vue'
 import Column from '@/components/Column.vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { ApiService } from '@/services/api.service'
 
-const tableService = new TableService();
+const router = useRouter();
+const apiService = new ApiService();
+
+apiService.instance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 403 || error.response?.status === 401) {
+      localStorage.removeItem('jwt')
+      await router.push('/login')
+    }
+    return Promise.reject(error)
+  }
+)
 
 const tableData = ref();
 
 const route = useRoute();
 
 const loadTable = (page: number = 0) => {
-  tableService.fetch({
+  apiService.withAuth().lootlog.getAll({
     page,
     size: 30,
     sort: 'createdAt,desc',

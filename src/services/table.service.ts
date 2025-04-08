@@ -1,8 +1,6 @@
-import { Api } from '@/api/api' // ścieżka do wygenerowanego pliku api.ts
+import { ApiService } from '@/services/api.service' // ścieżka do wygenerowanego pliku api.ts
 
-const apiClient = new Api({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-})
+const apiService = new ApiService();
 
 export class TableService {
   /**
@@ -22,6 +20,6 @@ export class TableService {
     sort?: string[],
     npcRank?: 'NORMAL' | 'ELITE' | 'ELITE_II' | 'ELITE_III' | 'HERO' | 'TITAN'
   }) {
-    return apiClient.lootlog.getAll(params)
+    return apiService.withAuth().lootlog.getAll(params)
   }
 }

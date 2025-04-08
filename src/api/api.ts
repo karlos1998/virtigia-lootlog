@@ -14,6 +14,23 @@ export interface ErrorResponse {
   message?: string
 }
 
+export interface OAuthCodePayload {
+  code?: string
+}
+
+export interface OAuthTokenResponse {
+  token?: string
+}
+
+export interface LootlogUserDTO {
+  id?: string
+  login?: string
+  email?: string
+  name?: string
+  avatar?: string
+  baseAssetsPath?: string
+}
+
 /** Allocation of loot - who got what item */
 export interface AssignedItem {
   /** Loot id in loot window. It's just the id in the window for assigning a specific item. */
@@ -178,8 +195,8 @@ export interface PageableObject {
 
 export interface SortObject {
   empty?: boolean
-  unsorted?: boolean
   sorted?: boolean
+  unsorted?: boolean
 }
 
 import type { AxiosInstance, AxiosRequestConfig, HeadersDefaults, ResponseType } from 'axios'
@@ -341,12 +358,48 @@ export class HttpClient<SecurityDataType = unknown> {
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   lootlog = {
     /**
+     * @description OAuth user authorize
+     *
+     * @tags Auth
+     * @name OauthCallback
+     * @summary Callback OAuth
+     * @request POST:/lootlog/api/auth/oauth/callback
+     * @secure
+     */
+    oauthCallback: (data: OAuthCodePayload, params: RequestParams = {}) =>
+      this.request<OAuthTokenResponse, ErrorResponse>({
+        path: `/lootlog/api/auth/oauth/callback`,
+        method: 'POST',
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Profile
+     * @name MyProfile
+     * @request GET:/lootlog/api/profile/me
+     * @secure
+     */
+    myProfile: (params: RequestParams = {}) =>
+      this.request<LootlogUserDTO, ErrorResponse>({
+        path: `/lootlog/api/profile/me`,
+        method: 'GET',
+        secure: true,
+        ...params,
+      }),
+
+    /**
      * @description List of fights with participants, distribution of loots etc.
      *
      * @tags Battle records
      * @name GetAll
      * @summary List of battles
      * @request GET:/lootlog/api/battle-records
+     * @secure
      */
     getAll: (
       query?: {
@@ -382,6 +435,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/lootlog/api/battle-records`,
         method: 'GET',
         query: query,
+        secure: true,
         ...params,
       }),
   }

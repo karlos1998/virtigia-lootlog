@@ -28,7 +28,37 @@ const colorClass = computed(() => {
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center" :class="colorClass">
-    <slot card-class="w-11/12 md:w-7/12 lg:w-6/12 xl:w-4/12 shadow-2xl" />
-  </div>
+  <section
+    class="flex flex-col items-center md:flex-row md:justify-around md:px-6 min-h-screen transition-background-image duration-1000"
+    :class="colorClass"
+  >
+    <div  class="space-y-12">
+
+      <div class="text-center text-white py-12 md:py-0">
+        <div class="flex items-center justify-center align-items-center ">
+          <!-- logo here -->
+        </div>
+        <h1 class="text-5xl lg:text-5xl font-black italic">Margatron Lootlog</h1>
+        <h2 class="text-2xl italic">Oficjalny dodatek</h2>
+      </div>
+      <div
+        class="hidden md:block py-12 md:py-0 text-center text-white text-opacity-50 dark:text-opacity-80"
+      >
+        <p>
+          Historia walk
+        </p>
+        <p>
+          Zdobyte przedmioty
+        </p>
+        <p>
+          Podział łupów
+        </p>
+      </div>
+      <div class="hidden md:block text-white">
+        <!-- logo 2 -->
+      </div>
+    </div>
+
+    <slot />
+  </section>
 </template>

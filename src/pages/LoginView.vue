@@ -25,13 +25,6 @@ const submit = () => {
     <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
       <CardBox :class="cardClass" is-form @submit.prevent="submit">
 
-<!--        <FormCheckRadio-->
-<!--          v-model="form.remember"-->
-<!--          name="remember"-->
-<!--          label="Remember"-->
-<!--          :input-value="true"-->
-<!--        />-->
-
         <template #footer>
           <BaseButtons>
             <BaseButton type="submit" color="info" label="Zaloguj przy użyciu konta Margatron" />

@@ -364,7 +364,7 @@ const userName = computed(() => usePage().props.auth.user.name)
 // Add usePage:
 import { usePage } from '@inertiajs/vue3'
 // Remove unused useMainStore:
-// import { useMainStore } from '@/stores/main.js'
+// import { useMainStore } from '@/stores/main.ts'
 // ...
 
 // Update itemLabel:

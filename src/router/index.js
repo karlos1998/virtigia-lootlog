@@ -23,7 +23,7 @@ const routes = [
     meta: {
       title: 'Lootlog',
     },
-    path: '/lootlog/:npcRank',
+    path: '/lootlog/:npcRank?',
     name: 'lootlog',
     component: Home,
   },

@@ -79,4 +79,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    allowedHosts: ['vite-mbp-karol.letscode.it']
+  }
 })

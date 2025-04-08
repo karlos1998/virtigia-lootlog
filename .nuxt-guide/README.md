@@ -120,7 +120,7 @@ useHead({
 </template>
 ```
 
-#### In stores/main.js
+#### In stores/main.ts
 
 Remove `axios`, as you'll likely going to use Nuxt's `useFetch`. Then add some sample data for `clients` and `history`.
 

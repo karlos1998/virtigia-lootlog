@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
-import { useMainStore } from '@/stores/main.js'
+import { useMainStore } from '@/stores/main.ts'
 import {
   mdiAccountMultiple,
   mdiCartOutline,

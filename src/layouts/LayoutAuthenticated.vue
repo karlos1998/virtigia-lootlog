@@ -1,6 +1,6 @@
 <script setup>
 import { mdiForwardburger, mdiBackburger, mdiMenu } from '@mdi/js'
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import menuAside from '@/menuAside.js'
 import menuNavBar from '@/menuNavBar.js'
@@ -12,6 +12,8 @@ import NavBarItemPlain from '@/components/NavBarItemPlain.vue'
 import AsideMenu from '@/components/AsideMenu.vue'
 import FooterBar from '@/components/FooterBar.vue'
 import InstallPrompt from '@/components/InstallPrompt.vue'
+import { ApiService } from '@/services/api.service.js'
+import { useMainStore } from '@/stores/main.ts'
 
 const layoutAsidePadding = 'xl:pl-60'
 
@@ -36,6 +38,15 @@ const menuClick = (event, item) => {
     //
   }
 }
+
+
+const apiService = new ApiService();
+
+const mainStore = useMainStore()
+
+apiService.withAuth().lootlog.myProfile().then((data) => {
+  mainStore.setUser(data);
+})
 </script>
 
 <template>

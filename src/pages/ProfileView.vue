@@ -1,6 +1,6 @@
 <script setup>
 import { reactive } from 'vue'
-import { useMainStore } from '@/stores/main'
+import { useMainStore } from '@/stores/main.js'
 import { mdiAccount, mdiMail, mdiAsterisk, mdiFormTextboxPassword, mdiGithub } from '@mdi/js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBox from '@/components/CardBox.vue'
