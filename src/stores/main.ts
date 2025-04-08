@@ -42,5 +42,6 @@ export const useMainStore = defineStore('main', () => {
     clients,
     history,
     setUser,
+    baseAssetsPath
   }
 })

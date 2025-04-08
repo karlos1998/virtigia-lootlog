@@ -14,6 +14,7 @@ import FooterBar from '@/components/FooterBar.vue'
 import InstallPrompt from '@/components/InstallPrompt.vue'
 import { ApiService } from '@/services/api.service.js'
 import { useMainStore } from '@/stores/main.ts'
+import { RockTip } from 'virtigia-tips'
 
 const layoutAsidePadding = 'xl:pl-60'
 
@@ -50,6 +51,9 @@ apiService.withAuth().lootlog.myProfile().then((data) => {
 </script>
 
 <template>
+
+  <RockTip />
+
   <div
     :class="{
       'overflow-hidden lg:overflow-visible': isAsideMobileExpanded,

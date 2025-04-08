@@ -7,6 +7,7 @@ import AdvanceTable from '@/components/AdvanceTable.vue'
 import Column from '@/components/Column.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ApiService } from '@/services/api.service'
+import { useMainStore } from '@/stores/main'
 
 const router = useRouter();
 const apiService = new ApiService();
@@ -53,25 +54,47 @@ type SlotProps = {
   index: number
 }
 
+const mainStore = useMainStore();
+
 </script>
 <template>
 
   <AdvanceTable v-if="tableData" :data="tableData" @change-page="changePage">
     <Column header="Moby" name="npcs">
       <template #body="{ row }: SlotProps">
-        {{ row.npcs.map(npc => `${npc.name} (${npc.lvl}${npc.profession})`).join(', ') }}
+        <img
+          v-for="npc in row.npcs"
+          v-tip.npc="npc"
+          class="character"
+          :src="`${mainStore.baseAssetsPath}/img/npc/${npc.src}`"
+        />
       </template>
     </Column>
     <Column header="Gracze" name="characters">
       <template #body="{ row }: SlotProps">
-        {{ row.characters.map(character => `${character.name} (${character.lvl}${character.profession})`).join(', ') }}
+        <div
+          v-for="character in row.characters"
+          v-tip.other="{...character, level: character.lvl}"
+          class="character"
+          :style="{
+          backgroundImage: `url(${mainStore.baseAssetsPath}/img/outfits/${character.src})`
+          }"
+        />
       </template>
     </Column>
     <Column header="Zdobycze" name="characters">
       <template #body="{ row }: SlotProps">
         <div v-if="row.lootsAllocation">
-          <div v-for="item in row.lootsAllocation.assignedItems">
-            {{item.baseItemName}} - {{item.characterName}}
+          <div v-for="item in row.lootsAllocation.items">
+<!--            {{item.baseItemName}} - {{item.characterName}}-->
+            <div
+              v-tip.item="item.item"
+              class="item"
+              :style="{
+                backgroundImage: `url(${mainStore.baseAssetsPath}/img/${item.item.src})`
+              }"
+            />
+<!--            <pre>{{item.item}}</pre>-->
           </div>
         </div>
         <div v-else>-</div>
@@ -86,3 +109,15 @@ type SlotProps = {
 
 
 </template>
+
+<style>
+.item {
+  width: 32px;
+  height: 32px;
+}
+
+.character {
+  width: 32px;
+  height: 48px;
+}
+</style>
