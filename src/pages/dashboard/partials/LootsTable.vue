@@ -65,41 +65,42 @@ const mainStore = useMainStore();
         <img
           v-for="npc in row.npcs"
           v-tip.npc="npc"
-          class="character"
+          class="npc"
           :src="`${mainStore.baseAssetsPath}/img/npc/${npc.src}`"
         />
       </template>
     </Column>
     <Column header="Gracze" name="characters">
       <template #body="{ row }: SlotProps">
-        <div
-          v-for="character in row.characters"
-          v-tip.other="{...character, level: character.lvl}"
-          class="character"
-          :style="{
+        <div class="character-wrapper">
+          <div
+            v-for="character in row.characters"
+            v-tip.other="{...character, level: character.lvl}"
+            class="character"
+            :style="{
           backgroundImage: `url(${mainStore.baseAssetsPath}/img/outfits/${character.src})`
-          }"
-        />
+        }"
+          />
+        </div>
       </template>
     </Column>
+
     <Column header="Zdobycze" name="characters">
       <template #body="{ row }: SlotProps">
-        <div v-if="row.lootsAllocation">
-          <div v-for="item in row.lootsAllocation.items">
-<!--            {{item.baseItemName}} - {{item.characterName}}-->
-            <div
-              v-tip.item="item.item"
-              class="item"
-              :style="{
-                backgroundImage: `url(${mainStore.baseAssetsPath}/img/${item.item.src})`
-              }"
-            />
-<!--            <pre>{{item.item}}</pre>-->
-          </div>
+        <div v-if="row.lootsAllocation" class="item-wrapper">
+          <div
+            v-for="item in row.lootsAllocation.items"
+            v-tip.item="item.item"
+            class="item"
+            :style="{
+          backgroundImage: `url(${mainStore.baseAssetsPath}/img/${item.item.src})`
+        }"
+          />
         </div>
         <div v-else>-</div>
       </template>
     </Column>
+
     <Column header="Data" name="createdAt">
       <template #body="{ row }: SlotProps">
         {{ new Date(row.createdAt).toLocaleString() }}
@@ -119,5 +120,21 @@ const mainStore = useMainStore();
 .character {
   width: 32px;
   height: 48px;
+}
+
+.npc {
+  max-width: 64px;
+}
+
+.character-wrapper,
+.item-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.character,
+.item {
+  margin: 2px;
 }
 </style>
