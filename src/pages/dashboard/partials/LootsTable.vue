@@ -98,7 +98,7 @@ const mainStore = useMainStore();
     Dane z: {{ lastUpdated }}
   </div>
 
-  <AdvanceTable v-if="tableData" :data="tableData" @change-page="changePage">
+  <AdvanceTable :data="tableData || { content: [] }" @change-page="changePage">
     <Column header="Moby" name="npcs">
       <template #body="{ row }: SlotProps">
         <img
@@ -145,6 +145,17 @@ const mainStore = useMainStore();
         {{ new Date(row.createdAt).toLocaleString() }}
       </template>
     </Column>
+
+    <template #empty>
+      <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <h3 class="empty-state-title">Brak danych do wyświetlenia</h3>
+        <p class="empty-state-message">
+          Nie znaleziono żadnych zapisów lootów dla wybranych kryteriów.
+          Spróbuj zmienić filtry lub wróć później.
+        </p>
+      </div>
+    </template>
   </AdvanceTable>
 
 
@@ -216,5 +227,35 @@ const mainStore = useMainStore();
   margin-bottom: 10px;
   text-align: right;
   font-style: italic;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.dark .empty-state-title {
+  color: #f3f4f6;
+}
+
+.empty-state-message {
+  color: #6b7280;
+  max-width: 24rem;
+  margin: 0 auto;
+  line-height: 1.5;
 }
 </style>
