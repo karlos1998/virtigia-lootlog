@@ -69,6 +69,34 @@ export default defineConfig({
             options: {
               cacheName: 'html-cache',
             }
+          },
+          {
+            // Cache API requests
+            urlPattern: /^https:\/\/mbp-karol-java\.letscode\.it\/api\/lootlog/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24, // 1 day
+              },
+              networkTimeoutSeconds: 20, // Timeout after 20 seconds
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            // Cache image assets
+            urlPattern: /\.(png|jpg|jpeg|svg|gif)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'image-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              }
+            }
           }
         ]
       }

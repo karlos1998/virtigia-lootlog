@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import { TableService } from '@/services/table.service'
 import { computed, onMounted, ref, watch } from 'vue'
 import { LootlogBattleRecordDTO } from '@/api/api'
 import AdvanceTable from '@/components/AdvanceTable.vue'
@@ -8,9 +7,11 @@ import Column from '@/components/Column.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ApiService } from '@/services/api.service'
 import { useMainStore } from '@/stores/main'
+import { useLootStore } from '@/stores/loot'
 
 const router = useRouter();
 const apiService = new ApiService();
+const lootStore = useLootStore();
 
 apiService.instance.interceptors.response.use(
   (response) => response,
@@ -23,27 +24,58 @@ apiService.instance.interceptors.response.use(
   }
 )
 
-const tableData = ref();
-
 const route = useRoute();
 
+// Use the store's tableData instead of a local ref
+const tableData = computed(() => lootStore.tableData);
+const isLoading = computed(() => lootStore.loading);
+const lastUpdated = computed(() => lootStore.formattedLastUpdated);
+
 const loadTable = (page: number = 0) => {
+  // Safely access route.params.npcRank with a fallback to undefined
+  const currentNpcRank = route.params?.npcRank as 'NORMAL' | 'ELITE' | 'ELITE_II' | 'ELITE_III' | 'HERO' | 'TITAN' | undefined;
+
+  // Update the npcRank in the store
+  lootStore.setNpcRank(currentNpcRank || null);
+
+  // Set loading state
+  lootStore.setLoading(true);
+
   apiService.withAuth().lootlog.getAll({
     page,
     size: 30,
     sort: 'createdAt,desc',
-    npcRank: route.params.npcRank as 'NORMAL' | 'ELITE' | 'ELITE_II' | 'ELITE_III' | 'HERO' | 'TITAN'
+    npcRank: currentNpcRank
   }).then((data) => {
     if(!data.content) return;
-    tableData.value = data
+    // Update the store with the new data
+    lootStore.setTableData(data);
+  }).catch((error) => {
+    console.error('Failed to load data:', error);
+  }).finally(() => {
+    // Set loading state to false when done
+    lootStore.setLoading(false);
   });
 }
 
 onMounted(() => {
-  loadTable();
+  // If we have stored data for the current npcRank, use it immediately
+  if (lootStore.tableData &&
+      (lootStore.npcRank === (route.params.npcRank || null) ||
+       (!lootStore.npcRank && !route.params.npcRank))) {
+    // Data is already loaded from persistent storage
+  } else {
+    // Load fresh data
+    loadTable();
+  }
 })
 
-watch(() => route.params.npcRank, () => loadTable())
+watch(() => route.params.npcRank, (newRank, oldRank) => {
+  // Only trigger if both values are defined and different
+  if (newRank !== undefined && oldRank !== undefined && newRank !== oldRank) {
+    loadTable();
+  }
+})
 
 const changePage = (targetPage: number) => {
   loadTable(targetPage);
@@ -58,6 +90,13 @@ const mainStore = useMainStore();
 
 </script>
 <template>
+  <!-- Loading indicator -->
+  <div v-if="isLoading" class="loading-bar"></div>
+
+  <!-- Last updated timestamp -->
+  <div v-if="lastUpdated && !isLoading" class="last-updated">
+    Dane z: {{ lastUpdated }}
+  </div>
 
   <AdvanceTable v-if="tableData" :data="tableData" @change-page="changePage">
     <Column header="Moby" name="npcs">
@@ -136,5 +175,46 @@ const mainStore = useMainStore();
 .character,
 .item {
   margin: 2px;
+}
+
+.loading-bar {
+  height: 4px;
+  background: linear-gradient(90deg, #4f46e5, #818cf8, #a78bfa, #818cf8, #4f46e5);
+  background-size: 200% 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  animation: loading 2s infinite ease-in-out;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+  transform-origin: center;
+  transition: all 0.3s ease;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 0% 0;
+    opacity: 0.8;
+    transform: scaleY(0.9);
+  }
+  50% {
+    background-position: 100% 0;
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  100% {
+    background-position: 0% 0;
+    opacity: 0.8;
+    transform: scaleY(0.9);
+  }
+}
+
+.last-updated {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 10px;
+  text-align: right;
+  font-style: italic;
 }
 </style>

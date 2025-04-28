@@ -124,9 +124,9 @@ const transactionBarItems = computed(() => mainStore.history)
 
       <SectionTitleLineWithButton :icon="mdiAccountMultiple" title="Lootlog" />
 
-      <NotificationBar color="info" :icon="mdiMonitorCellphone">
-        <b>Responsive table.</b> Collapses on mobile
-      </NotificationBar>
+<!--      <NotificationBar color="info" :icon="mdiMonitorCellphone">-->
+<!--        <b>Responsive table.</b> Collapses on mobile-->
+<!--      </NotificationBar>-->
 
       <CardBox has-table>
         <LootsTable />
