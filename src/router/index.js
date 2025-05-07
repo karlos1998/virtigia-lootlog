@@ -26,6 +26,13 @@ const routes = [
     path: '/lootlog/:npcRank?',
     name: 'lootlog',
     component: Home,
+    beforeEnter: (to, from, next) => {
+      if (!to.params.npcRank) {
+        next({ name: 'lootlog', params: { npcRank: 'TITAN' } });
+      } else {
+        next();
+      }
+    },
   },
   // {
   //   meta: {

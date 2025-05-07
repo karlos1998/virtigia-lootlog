@@ -13,17 +13,6 @@ const router = useRouter();
 const apiService = new ApiService();
 const lootStore = useLootStore();
 
-apiService.instance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response?.status === 403 || error.response?.status === 401) {
-      localStorage.removeItem('jwt')
-      await router.push('/login')
-    }
-    return Promise.reject(error)
-  }
-)
-
 const route = useRoute();
 
 // Use the store's tableData instead of a local ref
@@ -38,8 +27,10 @@ const loadTable = (page: number = 0) => {
   // Update the npcRank in the store
   lootStore.setNpcRank(currentNpcRank || null);
 
-  // Set loading state
-  lootStore.setLoading(true);
+  // Set loading state if not already set
+  if (!lootStore.loading) {
+    lootStore.setLoading(true);
+  }
 
   apiService.withAuth().lootlog.getAll({
     page,
@@ -52,6 +43,8 @@ const loadTable = (page: number = 0) => {
     lootStore.setTableData(data);
   }).catch((error) => {
     console.error('Failed to load data:', error);
+    // We keep showing cached data if available
+    // No need to update the store, as we're already showing cached data
   }).finally(() => {
     // Set loading state to false when done
     lootStore.setLoading(false);
@@ -65,9 +58,12 @@ onMounted(() => {
        (!lootStore.npcRank && !route.params.npcRank))) {
     // Data is already loaded from persistent storage
   } else {
-    // Load fresh data
-    loadTable();
+    // No cached data available, set loading state
+    lootStore.setLoading(true);
   }
+
+  // Always try to load fresh data from backend
+  loadTable();
 })
 
 watch(() => route.params.npcRank, (newRank, oldRank) => {
@@ -94,8 +90,10 @@ const mainStore = useMainStore();
   <div v-if="isLoading" class="loading-bar"></div>
 
   <!-- Last updated timestamp -->
-  <div v-if="lastUpdated && !isLoading" class="last-updated">
-    Dane z: {{ lastUpdated }}
+  <div v-if="lastUpdated" class="last-updated">
+    <span v-if="isLoading"><span class="loading">⟳</span> Ładowanie nowych danych, pokazuję dane z: {{ lastUpdated }}</span>
+    <span v-else-if="lootStore.isDataFresh"><span class="fresh">✓</span> Dane są aktualne</span>
+    <span v-else><span class="cached">⏱</span> Dane z: {{ lastUpdated }}</span>
   </div>
 
   <AdvanceTable :data="tableData || { content: [] }" @change-page="changePage">
@@ -224,9 +222,38 @@ const mainStore = useMainStore();
 .last-updated {
   font-size: 0.875rem;
   color: #6b7280;
-  margin-bottom: 10px;
-  text-align: right;
-  font-style: italic;
+  margin-bottom: 15px;
+  text-align: center;
+  padding: 8px 12px;
+  background-color: #f9fafb;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.last-updated span {
+  display: inline-block;
+}
+
+.dark .last-updated {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #9ca3af;
+}
+
+.loading {
+  color: #6366f1;
+  margin-right: 4px;
+}
+
+.fresh {
+  color: #10b981;
+  margin-right: 4px;
+}
+
+.cached {
+  color: #f59e0b;
+  margin-right: 4px;
 }
 
 .empty-state {

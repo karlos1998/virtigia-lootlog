@@ -7,6 +7,7 @@ export interface LootStoreState {
   loading: boolean;
   lastUpdated: Date | null;
   npcRank: 'NORMAL' | 'ELITE' | 'ELITE_II' | 'ELITE_III' | 'HERO' | 'TITAN' | null;
+  dataFresh: boolean;
 }
 
 export const useLootStore = defineStore('loot', () => {
@@ -14,10 +15,12 @@ export const useLootStore = defineStore('loot', () => {
   const loading = ref<boolean>(false);
   const lastUpdated = ref<Date | null>(null);
   const npcRank = ref<'NORMAL' | 'ELITE' | 'ELITE_II' | 'ELITE_III' | 'HERO' | 'TITAN' | null>(null);
+  const dataFresh = ref<boolean>(false);
 
   function setTableData(data: any) {
     tableData.value = data;
     lastUpdated.value = new Date();
+    dataFresh.value = true;
   }
 
   function setLoading(isLoading: boolean) {
@@ -33,12 +36,18 @@ export const useLootStore = defineStore('loot', () => {
     return lastUpdated.value.toLocaleString();
   });
 
+  const isDataFresh = computed(() => {
+    return dataFresh.value;
+  });
+
   return {
     tableData,
     loading,
     lastUpdated,
     npcRank,
+    dataFresh,
     formattedLastUpdated,
+    isDataFresh,
     setTableData,
     setLoading,
     setNpcRank
@@ -47,6 +56,6 @@ export const useLootStore = defineStore('loot', () => {
   persist: {
     key: 'loot-store',
     storage: localStorage,
-    paths: ['tableData', 'lastUpdated', 'npcRank']
+    paths: ['tableData', 'lastUpdated', 'npcRank', 'dataFresh']
   }
 })
