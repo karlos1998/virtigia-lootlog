@@ -9,6 +9,19 @@ import { ApiService } from '@/services/api.service'
 import { useMainStore } from '@/stores/main'
 import { useLootStore } from '@/stores/loot'
 
+// Function to generate a unique color for each loot item
+const generateUniqueColor = (id: string) => {
+  // Simple hash function to convert string to a number
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  // Convert to a vibrant color (HSL with high saturation and lightness)
+  const h = Math.abs(hash) % 360;
+  return `hsl(${h}, 80%, 65%)`;
+}
+
 const router = useRouter();
 const apiService = new ApiService();
 const lootStore = useLootStore();
@@ -84,6 +97,40 @@ type SlotProps = {
 
 const mainStore = useMainStore();
 
+// Function to get the color for a character based on assigned loot
+const getCharacterColor = (row, characterId) => {
+  if (!row.lootsAllocation || !row.lootsAllocation.assignedItems) return '';
+
+  // Find the assigned item for this character
+  const assignedItem = row.lootsAllocation.assignedItems.find(item => item.characterId === characterId);
+  if (!assignedItem) return '';
+
+  // Generate a color based on the loot item ID
+  return generateUniqueColor(assignedItem.lootItemId);
+};
+
+// Function to get the color for a loot item
+const getLootItemColor = (lootItemId) => {
+  return generateUniqueColor(lootItemId);
+};
+
+// Function to check if an NPC is related to a loot drop
+// Now we know which NPC dropped the loot, so we'll only highlight that specific NPC
+const getNpcHighlight = (row, npcId) => {
+  if (!row.lootsAllocation || !row.lootsAllocation.items || row.lootsAllocation.items.length === 0) {
+    return '';
+  }
+
+  // Find the loot item that was dropped by this NPC
+  const lootItem = row.lootsAllocation.items.find(item => item.npcId === npcId);
+  if (!lootItem) {
+    return '';
+  }
+
+  // Generate a color based on the loot item ID
+  return generateUniqueColor(lootItem.id);
+};
+
 </script>
 <template>
   <!-- Loading indicator -->
@@ -103,6 +150,11 @@ const mainStore = useMainStore();
           v-for="npc in row.npcs"
           v-tip.npc="npc"
           class="npc"
+          :class="{ 'loot-highlight': getNpcHighlight(row, npc.id) }"
+          :style="{
+            '--highlight-color': getNpcHighlight(row, npc.id),
+            boxShadow: getNpcHighlight(row, npc.id) ? `0 0 0 2px ${getNpcHighlight(row, npc.id)}, 0 0 10px ${getNpcHighlight(row, npc.id)}` : ''
+          }"
           :src="`${mainStore.baseAssetsPath}/img/npc/${npc.src}`"
         />
       </template>
@@ -114,9 +166,12 @@ const mainStore = useMainStore();
             v-for="character in row.characters"
             v-tip.other="{...character, level: character.lvl}"
             class="character"
+            :class="{ 'loot-highlight': getCharacterColor(row, character.id) }"
             :style="{
-          backgroundImage: `url(${mainStore.baseAssetsPath}/img/outfits/${character.src})`
-        }"
+              backgroundImage: `url(${mainStore.baseAssetsPath}/img/outfits/${character.src})`,
+              '--highlight-color': getCharacterColor(row, character.id),
+              boxShadow: getCharacterColor(row, character.id) ? `0 0 0 2px ${getCharacterColor(row, character.id)}, 0 0 10px ${getCharacterColor(row, character.id)}` : ''
+            }"
           />
         </div>
       </template>
@@ -129,9 +184,12 @@ const mainStore = useMainStore();
             v-for="item in row.lootsAllocation.items"
             v-tip.item="item.item"
             class="item"
+            :class="{ 'loot-highlight': true }"
             :style="{
-          backgroundImage: `url(${mainStore.baseAssetsPath}/img/${item.item.src})`
-        }"
+              backgroundImage: `url(${mainStore.baseAssetsPath}/img/${item.item.src})`,
+              '--highlight-color': getLootItemColor(item.id),
+              boxShadow: `0 0 0 2px ${getLootItemColor(item.id)}, 0 0 10px ${getLootItemColor(item.id)}`
+            }"
           />
         </div>
         <div v-else>-</div>
@@ -284,5 +342,41 @@ const mainStore = useMainStore();
   max-width: 24rem;
   margin: 0 auto;
   line-height: 1.5;
+}
+
+/* Loot highlight styles */
+.loot-highlight {
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.loot-highlight::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 6px;
+  background: var(--highlight-color);
+  opacity: 0.2;
+  z-index: -1;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
 }
 </style>

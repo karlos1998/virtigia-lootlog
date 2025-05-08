@@ -64,9 +64,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        ErrorResponse: {
-            message?: string;
-        };
         OAuthCodePayload: {
             code?: string;
         };
@@ -81,7 +78,6 @@ export interface components {
             avatar?: string;
             baseAssetsPath?: string;
         };
-        /** @description Allocation of loot - who got what item */
         AssignedItem: {
             /** @description Loot id in loot window. It's just the id in the window for assigning a specific item. */
             lootItemId: string;
@@ -114,7 +110,6 @@ export interface components {
             /** @enum {string} */
             rarity?: "common" | "unique" | "heroic" | "legendary" | "upgraded" | "artefact";
         };
-        /** @description List of characters who got the loot window */
         CharacterLiteDTO: {
             id: string;
             name: string;
@@ -128,11 +123,14 @@ export interface components {
             attributes?: {
                 [key: string]: Record<string, never>;
             };
+            /** Format: int32 */
+            maxQuantity?: number;
         };
-        /** @description List of items in the loot window */
         LootItemDTO: {
             id: string;
             item: components["schemas"]["BaseItemDTO"];
+            /** Format: int64 */
+            npcId: number;
             wantCharacterIds: string[];
             dontCharacterIds: string[];
             needCharacterIds: string[];
@@ -165,7 +163,7 @@ export interface components {
             confirmedCharacterIds: string[];
             /** @description Allocation of loot - who got what item */
             assignedItems: components["schemas"]["AssignedItem"][];
-        } | null;
+        };
         NpcDTO: {
             /** Format: int64 */
             id: number;
@@ -207,12 +205,12 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
-            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
+            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -250,24 +248,6 @@ export interface operations {
                     "*/*": components["schemas"]["OAuthTokenResponse"];
                 };
             };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
-                };
-            };
         };
     };
     myProfile: {
@@ -286,24 +266,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["LootlogUserDTO"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -338,24 +300,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageLootlogBattleRecordDTO"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ErrorResponse"];
                 };
             };
         };

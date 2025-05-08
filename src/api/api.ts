@@ -10,10 +10,6 @@
  * ---------------------------------------------------------------
  */
 
-export interface ErrorResponse {
-  message?: string
-}
-
 export interface OAuthCodePayload {
   code?: string
 }
@@ -31,7 +27,6 @@ export interface LootlogUserDTO {
   baseAssetsPath?: string
 }
 
-/** Allocation of loot - who got what item */
 export interface AssignedItem {
   /** Loot id in loot window. It's just the id in the window for assigning a specific item. */
   lootItemId: string
@@ -90,7 +85,6 @@ export interface BaseItemDTO {
   rarity?: 'common' | 'unique' | 'heroic' | 'legendary' | 'upgraded' | 'artefact'
 }
 
-/** List of characters who got the loot window */
 export interface CharacterLiteDTO {
   id: string
   name: string
@@ -102,12 +96,15 @@ export interface CharacterLiteDTO {
 
 export interface ItemAttributes {
   attributes?: Record<string, object>
+  /** @format int32 */
+  maxQuantity?: number
 }
 
-/** List of items in the loot window */
 export interface LootItemDTO {
   id: string
   item: BaseItemDTO
+  /** @format int64 */
+  npcId: number
   wantCharacterIds: string[]
   dontCharacterIds: string[]
   needCharacterIds: string[]
@@ -133,7 +130,7 @@ export interface LootlogCharacterLiteDTO {
   profession: 'p' | 'w' | 't' | 'h' | 'm' | 'b'
 }
 
-export type LootsAllocationDTO = {
+export interface LootsAllocationDTO {
   /** List of characters who got the loot window */
   characters: CharacterLiteDTO[]
   /** List of items in the loot window */
@@ -142,7 +139,7 @@ export type LootsAllocationDTO = {
   confirmedCharacterIds: string[]
   /** Allocation of loot - who got what item */
   assignedItems: AssignedItem[]
-} | null
+}
 
 export interface NpcDTO {
   /** @format int64 */
@@ -185,12 +182,12 @@ export interface PageableObject {
   /** @format int64 */
   offset?: number
   sort?: SortObject
-  unpaged?: boolean
   paged?: boolean
   /** @format int32 */
   pageNumber?: number
   /** @format int32 */
   pageSize?: number
+  unpaged?: boolean
 }
 
 export interface SortObject {
@@ -367,7 +364,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     oauthCallback: (data: OAuthCodePayload, params: RequestParams = {}) =>
-      this.request<OAuthTokenResponse, ErrorResponse>({
+      this.request<OAuthTokenResponse, any>({
         path: `/lootlog/api/auth/oauth/callback`,
         method: 'POST',
         body: data,
@@ -385,7 +382,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     myProfile: (params: RequestParams = {}) =>
-      this.request<LootlogUserDTO, ErrorResponse>({
+      this.request<LootlogUserDTO, any>({
         path: `/lootlog/api/profile/me`,
         method: 'GET',
         secure: true,
@@ -431,7 +428,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       },
       params: RequestParams = {},
     ) =>
-      this.request<PageLootlogBattleRecordDTO, ErrorResponse>({
+      this.request<PageLootlogBattleRecordDTO, any>({
         path: `/lootlog/api/battle-records`,
         method: 'GET',
         query: query,
