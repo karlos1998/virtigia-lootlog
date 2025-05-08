@@ -97,7 +97,7 @@ type SlotProps = {
 
 const mainStore = useMainStore();
 
-// Function to get the color for a character based on assigned loot
+// Function to get the color for a character based on character ID
 const getCharacterColor = (row, characterId) => {
   if (!row.lootsAllocation || !row.lootsAllocation.assignedItems) return '';
 
@@ -105,31 +105,23 @@ const getCharacterColor = (row, characterId) => {
   const assignedItem = row.lootsAllocation.assignedItems.find(item => item.characterId === characterId);
   if (!assignedItem) return '';
 
-  // Generate a color based on the loot item ID
-  return generateUniqueColor(assignedItem.lootItemId);
+  // Generate a color based on the character ID
+  return generateUniqueColor(characterId);
 };
 
-// Function to get the color for a loot item
-const getLootItemColor = (lootItemId) => {
-  return generateUniqueColor(lootItemId);
+// Function to get the color for a loot item based on the character who received it
+const getLootItemColor = (row, lootItemId) => {
+  if (!row.lootsAllocation || !row.lootsAllocation.assignedItems) return '';
+
+  // Find the assigned item to determine which character received this loot
+  const assignedItem = row.lootsAllocation.assignedItems.find(item => item.lootItemId === lootItemId);
+  if (!assignedItem) return '';
+
+  // Generate a color based on the character ID who received the item
+  return generateUniqueColor(assignedItem.characterId);
 };
 
-// Function to check if an NPC is related to a loot drop
-// Now we know which NPC dropped the loot, so we'll only highlight that specific NPC
-const getNpcHighlight = (row, npcId) => {
-  if (!row.lootsAllocation || !row.lootsAllocation.items || row.lootsAllocation.items.length === 0) {
-    return '';
-  }
-
-  // Find the loot item that was dropped by this NPC
-  const lootItem = row.lootsAllocation.items.find(item => item.npcId === npcId);
-  if (!lootItem) {
-    return '';
-  }
-
-  // Generate a color based on the loot item ID
-  return generateUniqueColor(lootItem.id);
-};
+// NPC highlighting is removed as per requirements
 
 </script>
 <template>
@@ -150,11 +142,6 @@ const getNpcHighlight = (row, npcId) => {
           v-for="npc in row.npcs"
           v-tip.npc="npc"
           class="npc"
-          :class="{ 'loot-highlight': getNpcHighlight(row, npc.id) }"
-          :style="{
-            '--highlight-color': getNpcHighlight(row, npc.id),
-            boxShadow: getNpcHighlight(row, npc.id) ? `0 0 0 2px ${getNpcHighlight(row, npc.id)}, 0 0 10px ${getNpcHighlight(row, npc.id)}` : ''
-          }"
           :src="`${mainStore.baseAssetsPath}/img/npc/${npc.src}`"
         />
       </template>
@@ -187,8 +174,8 @@ const getNpcHighlight = (row, npcId) => {
             :class="{ 'loot-highlight': true }"
             :style="{
               backgroundImage: `url(${mainStore.baseAssetsPath}/img/${item.item.src})`,
-              '--highlight-color': getLootItemColor(item.id),
-              boxShadow: `0 0 0 2px ${getLootItemColor(item.id)}, 0 0 10px ${getLootItemColor(item.id)}`
+              '--highlight-color': getLootItemColor(row, item.id),
+              boxShadow: `0 0 0 2px ${getLootItemColor(row, item.id)}, 0 0 10px ${getLootItemColor(row, item.id)}`
             }"
           />
         </div>
