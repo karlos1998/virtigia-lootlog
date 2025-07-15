@@ -1,7 +1,6 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import { useMainStore } from '@/stores/main.ts'
-import { useLootStore } from '@/stores/loot'
 import { ApiService } from '@/services/api.service'
 import {
   mdiAccountMultiple,
@@ -26,7 +25,6 @@ import CardBoxClient from '@/components/CardBoxClient.vue'
 import LayoutAuthenticated from '@/layouts/LayoutAuthenticated.vue'
 import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
 import SectionBannerStarOnGitHub from '@/components/SectionBannerStarOnGitHub.vue'
-import LootsTable from '@/pages/dashboard/partials/LootsTable.vue'
 import DropdownButton from '@/components/DropdownButton.vue'
 import DropdownMenuItem from '@/components/DropdownMenuItem.vue'
 
@@ -41,38 +39,9 @@ onMounted(() => {
 })
 
 const mainStore = useMainStore()
-const lootStore = useLootStore()
-
 const clientBarItems = computed(() => mainStore.clients.slice(0, 4))
 
 const transactionBarItems = computed(() => mainStore.history)
-
-const refreshLootTable = () => {
-  // Set loading state
-  lootStore.setLoading(true)
-
-  // Call the API to reload the data
-  const currentNpcRank = lootStore.npcRank
-
-  // Use the API service to reload the data
-  const apiService = new ApiService()
-
-  apiService.withAuth().lootlog.getAll({
-    page: 0,
-    size: 30,
-    sort: 'createdAt,desc',
-    npcRank: currentNpcRank
-  }).then((data) => {
-    if(!data.content) return
-    // Update the store with the new data
-    lootStore.setTableData(data)
-  }).catch((error) => {
-    console.error('Failed to load data:', error)
-  }).finally(() => {
-    // Set loading state to false when done
-    lootStore.setLoading(false)
-  })
-}
 </script>
 
 <template>
@@ -155,19 +124,9 @@ const refreshLootTable = () => {
 <!--        </div>-->
 <!--      </CardBox>-->
 
-      <SectionTitleLineWithButton :icon="mdiAccountMultiple" title="Lootlog">
-        <DropdownButton>
-          <DropdownMenuItem :icon="mdiReload" label="Odśwież" @click="refreshLootTable" />
-        </DropdownButton>
-      </SectionTitleLineWithButton>
-
 <!--      <NotificationBar color="info" :icon="mdiMonitorCellphone">-->
 <!--        <b>Responsive table.</b> Collapses on mobile-->
 <!--      </NotificationBar>-->
-
-      <CardBox has-table>
-        <LootsTable />
-      </CardBox>
 
     </SectionMain>
   </LayoutAuthenticated>

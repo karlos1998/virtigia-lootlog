@@ -21,28 +21,6 @@ export default [
   //   label: 'Dashboard',
   // },
   {
-    label: 'Lootlog',
-    icon: mdiViewList,
-    menu: [
-      {
-        label: 'Elity',
-        to: '/lootlog/ELITE'
-      },
-      {
-        label: 'Elity II',
-        to: '/lootlog/ELITE_II'
-      },
-      {
-        label: 'Herosi',
-        to: '/lootlog/HERO'
-      },
-      {
-        label: 'Tytani',
-        to: '/lootlog/TITAN'
-      },
-    ],
-  },
-  {
     to: '/battle-dates',
     label: 'Daty Bitew',
     icon: mdiTable,

@@ -14,27 +14,8 @@ const routes = [
   //   component: Style,
   // },
   {
-    meta: {
-      title: 'Dashboard',
-    },
     path: '/',
-    name: 'dashboard',
-    component: Home,
-  },
-  {
-    meta: {
-      title: 'Lootlog',
-    },
-    path: '/lootlog/:npcRank?',
-    name: 'lootlog',
-    component: Home,
-    beforeEnter: (to, from, next) => {
-      if (!to.params.npcRank) {
-        next({ name: 'lootlog', params: { npcRank: 'TITAN' } });
-      } else {
-        next();
-      }
-    },
+    redirect: '/battle-dates',
   },
   {
     meta: {
