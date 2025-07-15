@@ -42,6 +42,11 @@ export default [
       },
     ],
   },
+  {
+    to: '/battle-dates',
+    label: 'Daty Bitew',
+    icon: mdiTable,
+  },
   // {
   //   to: '/tables',
   //   label: 'Tables',

@@ -60,6 +60,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/lootlog/api/battle-loots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List of battle loots
+         * @description List of battle loots from fights with special NPCs (HERO, ELITE_II, TITAN)
+         */
+        get: operations["getAll_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/lootlog/api/battle-dates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List of battle dates
+         * @description List of battle dates from fights with special NPCs (HERO, ELITE_II, TITAN)
+         */
+        get: operations["getAll_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -104,7 +144,7 @@ export interface components {
             /** @enum {string} */
             category?: "oneHanded" | "armors" | "twoHanded" | "halfHanded" | "gloves" | "helmets" | "boots" | "rings" | "necklaces" | "shields" | "staffs" | "auxiliary" | "quests" | "consumable" | "neutrals" | "backpacks" | "wands" | "distances" | "arrows" | "talismans" | "upgrades" | "books" | "keys" | "golds";
             /** @enum {string} */
-            currency?: "gold" | "unset";
+            currency?: "gold" | "unset" | "dragonTear" | "honor";
             /** Format: int32 */
             price?: number;
             /** @enum {string} */
@@ -182,12 +222,16 @@ export interface components {
             /** @enum {string} */
             profession: "p" | "w" | "t" | "h" | "m" | "b";
             inGroup: boolean;
+            /** Format: int32 */
+            minRespawnTime: number;
+            /** Format: int32 */
+            maxRespawnTime: number;
         };
         PageLootlogBattleRecordDTO: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
@@ -196,26 +240,88 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PageableObject: {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
-            sorted?: boolean;
             unsorted?: boolean;
+            sorted?: boolean;
+        };
+        LootlogBattleLootDTO: {
+            id: string;
+            battleId: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            characters: components["schemas"]["CharacterLiteDTO"][];
+            npcs: components["schemas"]["NpcDTO"][];
+            /** @description IDs of items that were in the loot window */
+            itemIds: string[];
+            /** @description Allocation of loot - who got what item */
+            assignedItems: components["schemas"]["AssignedItem"][];
+            /** @description ID of characters who confirmed the loot window before the time expired */
+            confirmedCharacterIds: string[];
+        };
+        PageLootlogBattleLootDTO: {
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["LootlogBattleLootDTO"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
+        LootlogBattleDateDTO: {
+            id: string;
+            battleId: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            characters: components["schemas"]["CharacterLiteDTO"][];
+            npcs: components["schemas"]["NpcDTO"][];
+        };
+        PageLootlogBattleDateDTO: {
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["LootlogBattleDateDTO"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
         };
     };
     responses: never;
@@ -300,6 +406,60 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageLootlogBattleRecordDTO"];
+                };
+            };
+        };
+    };
+    getAll_1: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index (0..N) */
+                page?: number;
+                /** @description The size of the page to be returned */
+                size?: number;
+                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+                sort?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageLootlogBattleLootDTO"];
+                };
+            };
+        };
+    };
+    getAll_2: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index (0..N) */
+                page?: number;
+                /** @description The size of the page to be returned */
+                size?: number;
+                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+                sort?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageLootlogBattleDateDTO"];
                 };
             };
         };

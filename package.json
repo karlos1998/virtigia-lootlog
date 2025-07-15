@@ -9,8 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
-    "docs": "npx openapi-typescript https://mbp-karol-java.letscode.it/v3/api-docs/lootlog -o src/types/api.d.ts",
-    "api": "npx swagger-typescript-api generate -p https://mbp-karol-java.letscode.it/v3/api-docs/lootlog -o src/api -n api.ts --axios --unwrap-response-data --default-response-type=json"
+    "docs": "npx openapi-typescript https://mbp-karol-java-margatron.letscode.it/v3/api-docs/lootlog -o src/types/api.d.ts",
+    "api": "npx swagger-typescript-api generate -p https://mbp-karol-java-margatron.letscode.it/v3/api-docs/lootlog -o src/api -n api.ts --axios --unwrap-response-data --default-response-type=json"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",

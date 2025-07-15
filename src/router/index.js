@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 // import Style from '@/views/StyleView.vue'
 import Home from '@/pages/dashboard/HomeView.vue'
+import BattleDates from '@/pages/dashboard/BattleDatesView.vue'
 
 const routes = [
   // {
@@ -33,6 +34,14 @@ const routes = [
         next();
       }
     },
+  },
+  {
+    meta: {
+      title: 'Battle Dates',
+    },
+    path: '/battle-dates',
+    name: 'battle-dates',
+    component: BattleDates,
   },
   // {
   //   meta: {
