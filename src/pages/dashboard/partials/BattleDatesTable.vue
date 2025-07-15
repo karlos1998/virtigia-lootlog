@@ -29,7 +29,7 @@ const loadTable = (page: number = 0) => {
   apiService.withAuth().lootlog.getAll2({
     page,
     size: 30,
-    sort: 'createdAt,desc'
+    sort: 'updatedAt,desc'
   }).then((data) => {
     if(!data.content) return;
     // Update the table data
