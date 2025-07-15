@@ -47,6 +47,11 @@ export default [
     label: 'Daty Bitew',
     icon: mdiTable,
   },
+  {
+    to: '/battle-loots',
+    label: 'Łupy Bitewne',
+    icon: mdiTable,
+  },
   // {
   //   to: '/tables',
   //   label: 'Tables',

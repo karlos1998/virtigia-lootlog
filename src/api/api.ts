@@ -206,6 +206,61 @@ export interface SortObject {
   sorted?: boolean;
 }
 
+export interface ItemDTO {
+  id?: string;
+  name?: string;
+  src?: string;
+  /** @format int32 */
+  position?: number;
+  location?:
+    | "BAG"
+    | "EQUIPMENT"
+    | "MAP"
+    | "BAGS_AREA"
+    | "CITY_MAIL"
+    | "DEPOSIT";
+  /** @format int64 */
+  baseItemId?: number;
+  attributes?: ItemAttributes;
+  category?:
+    | "oneHanded"
+    | "armors"
+    | "twoHanded"
+    | "halfHanded"
+    | "gloves"
+    | "helmets"
+    | "boots"
+    | "rings"
+    | "necklaces"
+    | "shields"
+    | "staffs"
+    | "auxiliary"
+    | "quests"
+    | "consumable"
+    | "neutrals"
+    | "backpacks"
+    | "wands"
+    | "distances"
+    | "arrows"
+    | "talismans"
+    | "upgrades"
+    | "books"
+    | "keys"
+    | "golds";
+  currency?: "gold" | "unset" | "dragonTear" | "honor";
+  /** @format int32 */
+  price?: number;
+  rarity?:
+    | "common"
+    | "unique"
+    | "heroic"
+    | "legendary"
+    | "upgraded"
+    | "artefact";
+  /** @format int32 */
+  bagNumber?: number;
+}
+
 export interface LootlogBattleLootDTO {
   id: string;
   battleId: string;
@@ -221,6 +276,8 @@ export interface LootlogBattleLootDTO {
   assignedItems: AssignedItem[];
   /** ID of characters who confirmed the loot window before the time expired */
   confirmedCharacterIds: string[];
+  /** Items that were in the loot window */
+  items: ItemDTO[];
 }
 
 export interface PageLootlogBattleLootDTO {
@@ -335,7 +392,8 @@ export class HttpClient<SecurityDataType = unknown> {
   }: ApiConfig<SecurityDataType> = {}) {
     this.instance = axios.create({
       ...axiosConfig,
-      baseURL: axiosConfig.baseURL || "https://mbp-karol-java-margatron.letscode.it",
+      baseURL:
+        axiosConfig.baseURL || "https://mbp-karol-java-margatron.letscode.it",
     });
     this.secure = secure;
     this.format = format;

@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 // import Style from '@/views/StyleView.vue'
 import Home from '@/pages/dashboard/HomeView.vue'
 import BattleDates from '@/pages/dashboard/BattleDatesView.vue'
+import BattleLoots from '@/pages/dashboard/BattleLootsView.vue'
 
 const routes = [
   // {
@@ -42,6 +43,14 @@ const routes = [
     path: '/battle-dates',
     name: 'battle-dates',
     component: BattleDates,
+  },
+  {
+    meta: {
+      title: 'Battle Loots',
+    },
+    path: '/battle-loots',
+    name: 'battle-loots',
+    component: BattleLoots,
   },
   // {
   //   meta: {
