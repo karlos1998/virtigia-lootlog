@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { LootlogBattleLootDTO, NpcDTO, CharacterLiteDTO, AssignedItem } from '@/api/api'
+import { LootlogBattleLootDTO, NpcDTO, CharacterLiteDTO, AssignedItem, LootItemDTO } from '@/api/api'
 import AdvanceTable from '@/components/AdvanceTable.vue'
 import Column from '@/components/Column.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ApiService } from '@/services/api.service'
 import { useMainStore } from '@/stores/main'
+import CardBoxModal from '@/components/CardBoxModal.vue'
+import BaseButton from '@/components/BaseButton.vue'
+import { mdiInformationOutline } from '@mdi/js'
 
 // Function to generate a unique color for each loot item
 const generateUniqueColor = (id: string) => {
@@ -30,6 +33,9 @@ const route = useRoute();
 const tableData = ref(null);
 const isLoading = ref(false);
 const lastUpdated = ref(null);
+const isModalActive = ref(false);
+const selectedItem = ref(null);
+const selectedRow = ref(null);
 
 const loadTable = (page: number = 0) => {
   // Set loading state
@@ -96,6 +102,19 @@ const getLootItemColor = (row: LootlogBattleLootDTO, itemId: string) => {
   // Generate a color based on the character ID who received the item
   return generateUniqueColor(assignedItem.characterId);
 };
+
+// Function to show item details in modal
+const showItemDetails = (item: LootItemDTO, row: LootlogBattleLootDTO) => {
+  selectedItem.value = item;
+  selectedRow.value = row;
+  isModalActive.value = true;
+};
+
+// Function to get character name by ID
+const getCharacterNameById = (row: LootlogBattleLootDTO, characterId: string) => {
+  const character = row.characters.find(char => char.id === characterId);
+  return character ? character.name : 'Unknown';
+};
 </script>
 
 <template>
@@ -142,14 +161,15 @@ const getLootItemColor = (row: LootlogBattleLootDTO, itemId: string) => {
         <div v-if="row.items && row.items.length > 0" class="item-wrapper">
           <div
             v-for="item in row.items"
-            v-tip.item="item"
+            v-tip.item="item.item"
             class="item"
             :class="{ 'loot-highlight': true }"
             :style="{
-              backgroundImage: `url(${mainStore.baseAssetsPath}/img/${item.src})`,
+              backgroundImage: `url(${item.item.src})`,
               '--highlight-color': getLootItemColor(row, item.id),
               boxShadow: `0 0 0 2px ${getLootItemColor(row, item.id)}, 0 0 10px ${getLootItemColor(row, item.id)}`
             }"
+            @click="showItemDetails(item, row)"
           />
         </div>
         <div v-else>-</div>
@@ -173,6 +193,69 @@ const getLootItemColor = (row: LootlogBattleLootDTO, itemId: string) => {
       </div>
     </template>
   </AdvanceTable>
+
+  <!-- Item Details Modal -->
+  <CardBoxModal
+    v-model="isModalActive"
+    title="Szczegóły przedmiotu"
+    button="info"
+    has-cancel
+  >
+    <div v-if="selectedItem && selectedRow" class="item-details">
+      <div class="item-header">
+        <div
+          class="item-image"
+          :style="{ backgroundImage: `url(${selectedItem.item.src})` }"
+        ></div>
+        <div class="item-info">
+          <h3 class="item-name">{{ selectedItem.item.name }}</h3>
+          <p class="item-category">Kategoria: {{ selectedItem.item.category }}</p>
+          <p class="item-rarity">Rzadkość: {{ selectedItem.item.rarity }}</p>
+        </div>
+      </div>
+
+      <div class="item-section">
+        <h4>Przypisanie przedmiotu</h4>
+        <div v-if="selectedRow.assignedItems && selectedRow.assignedItems.length > 0">
+          <div v-for="assignedItem in selectedRow.assignedItems.filter(item => item.lootItemId === selectedItem.id)" class="assigned-item">
+            <p>Zdobywca: <strong>{{ assignedItem.characterName }}</strong></p>
+          </div>
+        </div>
+        <p v-else>Przedmiot nie został jeszcze przypisany.</p>
+      </div>
+
+      <div class="item-section">
+        <h4>Zainteresowanie przedmiotem</h4>
+        <div v-if="selectedItem.wantCharacterIds && selectedItem.wantCharacterIds.length > 0">
+          <h5>Chcą:</h5>
+          <ul>
+            <li v-for="charId in selectedItem.wantCharacterIds">
+              {{ getCharacterNameById(selectedRow, charId) }}
+            </li>
+          </ul>
+        </div>
+        <div v-if="selectedItem.needCharacterIds && selectedItem.needCharacterIds.length > 0">
+          <h5>Potrzebują:</h5>
+          <ul>
+            <li v-for="charId in selectedItem.needCharacterIds">
+              {{ getCharacterNameById(selectedRow, charId) }}
+            </li>
+          </ul>
+        </div>
+        <div v-if="selectedItem.dontCharacterIds && selectedItem.dontCharacterIds.length > 0">
+          <h5>Nie chcą:</h5>
+          <ul>
+            <li v-for="charId in selectedItem.dontCharacterIds">
+              {{ getCharacterNameById(selectedRow, charId) }}
+            </li>
+          </ul>
+        </div>
+        <p v-if="!selectedItem.wantCharacterIds.length && !selectedItem.needCharacterIds.length && !selectedItem.dontCharacterIds.length">
+          Brak informacji o zainteresowaniu przedmiotem.
+        </p>
+      </div>
+    </div>
+  </CardBoxModal>
 </template>
 
 <style>
@@ -336,5 +419,129 @@ const getLootItemColor = (row: LootlogBattleLootDTO, itemId: string) => {
     transform: scale(1);
     opacity: 0.2;
   }
+}
+
+/* Item details modal styles */
+.item-details {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .item-header {
+  border-color: #374151;
+}
+
+.item-image {
+  width: 64px;
+  height: 64px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-right: 1rem;
+  border-radius: 4px;
+  border: 2px solid #e5e7eb;
+}
+
+.dark .item-image {
+  border-color: #374151;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #1f2937;
+}
+
+.dark .item-name {
+  color: #f3f4f6;
+}
+
+.item-category, .item-rarity {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.dark .item-category, .dark .item-rarity {
+  color: #9ca3af;
+}
+
+.item-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .item-section {
+  border-color: #374151;
+}
+
+.item-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.item-section h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #1f2937;
+}
+
+.dark .item-section h4 {
+  color: #f3f4f6;
+}
+
+.item-section h5 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  margin-top: 0.75rem;
+  color: #4b5563;
+}
+
+.dark .item-section h5 {
+  color: #d1d5db;
+}
+
+.item-section ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.item-section li {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+}
+
+.dark .item-section li {
+  color: #d1d5db;
+}
+
+.assigned-item {
+  padding: 0.5rem;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.dark .assigned-item {
+  background-color: #1f2937;
 }
 </style>

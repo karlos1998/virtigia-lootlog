@@ -258,30 +258,8 @@ export interface components {
         };
         SortObject: {
             empty?: boolean;
-            unsorted?: boolean;
             sorted?: boolean;
-        };
-        ItemDTO: {
-            id?: string;
-            name?: string;
-            src?: string;
-            /** Format: int32 */
-            position?: number;
-            /** @enum {string} */
-            location?: "BAG" | "EQUIPMENT" | "MAP" | "BAGS_AREA" | "CITY_MAIL" | "DEPOSIT";
-            /** Format: int64 */
-            baseItemId?: number;
-            attributes?: components["schemas"]["ItemAttributes"];
-            /** @enum {string} */
-            category?: "oneHanded" | "armors" | "twoHanded" | "halfHanded" | "gloves" | "helmets" | "boots" | "rings" | "necklaces" | "shields" | "staffs" | "auxiliary" | "quests" | "consumable" | "neutrals" | "backpacks" | "wands" | "distances" | "arrows" | "talismans" | "upgrades" | "books" | "keys" | "golds";
-            /** @enum {string} */
-            currency?: "gold" | "unset" | "dragonTear" | "honor";
-            /** Format: int32 */
-            price?: number;
-            /** @enum {string} */
-            rarity?: "common" | "unique" | "heroic" | "legendary" | "upgraded" | "artefact";
-            /** Format: int32 */
-            bagNumber?: number;
+            unsorted?: boolean;
         };
         LootlogBattleLootDTO: {
             id: string;
@@ -292,14 +270,12 @@ export interface components {
             updatedAt: string;
             characters: components["schemas"]["CharacterLiteDTO"][];
             npcs: components["schemas"]["NpcDTO"][];
-            /** @description IDs of items that were in the loot window */
-            itemIds: string[];
             /** @description Allocation of loot - who got what item */
             assignedItems: components["schemas"]["AssignedItem"][];
             /** @description ID of characters who confirmed the loot window before the time expired */
             confirmedCharacterIds: string[];
             /** @description Items that were in the loot window */
-            items: components["schemas"]["ItemDTO"][];
+            items: components["schemas"]["LootItemDTO"][];
         };
         PageLootlogBattleLootDTO: {
             /** Format: int64 */

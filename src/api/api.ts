@@ -202,63 +202,8 @@ export interface PageableObject {
 
 export interface SortObject {
   empty?: boolean;
-  unsorted?: boolean;
   sorted?: boolean;
-}
-
-export interface ItemDTO {
-  id?: string;
-  name?: string;
-  src?: string;
-  /** @format int32 */
-  position?: number;
-  location?:
-    | "BAG"
-    | "EQUIPMENT"
-    | "MAP"
-    | "BAGS_AREA"
-    | "CITY_MAIL"
-    | "DEPOSIT";
-  /** @format int64 */
-  baseItemId?: number;
-  attributes?: ItemAttributes;
-  category?:
-    | "oneHanded"
-    | "armors"
-    | "twoHanded"
-    | "halfHanded"
-    | "gloves"
-    | "helmets"
-    | "boots"
-    | "rings"
-    | "necklaces"
-    | "shields"
-    | "staffs"
-    | "auxiliary"
-    | "quests"
-    | "consumable"
-    | "neutrals"
-    | "backpacks"
-    | "wands"
-    | "distances"
-    | "arrows"
-    | "talismans"
-    | "upgrades"
-    | "books"
-    | "keys"
-    | "golds";
-  currency?: "gold" | "unset" | "dragonTear" | "honor";
-  /** @format int32 */
-  price?: number;
-  rarity?:
-    | "common"
-    | "unique"
-    | "heroic"
-    | "legendary"
-    | "upgraded"
-    | "artefact";
-  /** @format int32 */
-  bagNumber?: number;
+  unsorted?: boolean;
 }
 
 export interface LootlogBattleLootDTO {
@@ -270,14 +215,12 @@ export interface LootlogBattleLootDTO {
   updatedAt: string;
   characters: CharacterLiteDTO[];
   npcs: NpcDTO[];
-  /** IDs of items that were in the loot window */
-  itemIds: string[];
   /** Allocation of loot - who got what item */
   assignedItems: AssignedItem[];
   /** ID of characters who confirmed the loot window before the time expired */
   confirmedCharacterIds: string[];
   /** Items that were in the loot window */
-  items: ItemDTO[];
+  items: LootItemDTO[];
 }
 
 export interface PageLootlogBattleLootDTO {
