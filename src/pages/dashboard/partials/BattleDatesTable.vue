@@ -155,13 +155,7 @@ const calculateMaxRespawnTime = (updatedAt: string, maxRespawnTime: number): Dat
       </template>
     </Column>
 
-    <Column header="Data utworzenia" name="createdAt">
-      <template #body="{ row }: SlotProps">
-        {{ formatDate(row.createdAt) }}
-      </template>
-    </Column>
-
-    <Column header="Data aktualizacji" name="updatedAt">
+    <Column header="Data" name="updatedAt">
       <template #body="{ row }: SlotProps">
         {{ formatDate(row.updatedAt) }}
       </template>
