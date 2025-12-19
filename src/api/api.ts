@@ -78,7 +78,8 @@ export interface BaseItemDTO {
     | "upgrades"
     | "books"
     | "keys"
-    | "golds";
+    | "golds"
+    | "blessings";
   currency?: "gold" | "unset" | "dragonTear" | "honor";
   /** @format int32 */
   price?: number;
@@ -170,10 +171,13 @@ export interface NpcDTO {
 }
 
 export interface PageLootlogBattleRecordDTO {
-  /** @format int64 */
-  totalElements?: number;
   /** @format int32 */
   totalPages?: number;
+  /** @format int64 */
+  totalElements?: number;
+  pageable?: PageableObject;
+  /** @format int32 */
+  numberOfElements?: number;
   first?: boolean;
   last?: boolean;
   /** @format int32 */
@@ -182,28 +186,25 @@ export interface PageLootlogBattleRecordDTO {
   /** @format int32 */
   number?: number;
   sort?: SortObject;
-  /** @format int32 */
-  numberOfElements?: number;
-  pageable?: PageableObject;
   empty?: boolean;
 }
 
 export interface PageableObject {
-  /** @format int64 */
-  offset?: number;
-  sort?: SortObject;
-  unpaged?: boolean;
   paged?: boolean;
   /** @format int32 */
   pageNumber?: number;
   /** @format int32 */
   pageSize?: number;
+  unpaged?: boolean;
+  /** @format int64 */
+  offset?: number;
+  sort?: SortObject;
 }
 
 export interface SortObject {
-  empty?: boolean;
   sorted?: boolean;
   unsorted?: boolean;
+  empty?: boolean;
 }
 
 export interface LootlogBattleLootDTO {
@@ -224,10 +225,13 @@ export interface LootlogBattleLootDTO {
 }
 
 export interface PageLootlogBattleLootDTO {
-  /** @format int64 */
-  totalElements?: number;
   /** @format int32 */
   totalPages?: number;
+  /** @format int64 */
+  totalElements?: number;
+  pageable?: PageableObject;
+  /** @format int32 */
+  numberOfElements?: number;
   first?: boolean;
   last?: boolean;
   /** @format int32 */
@@ -236,9 +240,6 @@ export interface PageLootlogBattleLootDTO {
   /** @format int32 */
   number?: number;
   sort?: SortObject;
-  /** @format int32 */
-  numberOfElements?: number;
-  pageable?: PageableObject;
   empty?: boolean;
 }
 
@@ -254,10 +255,13 @@ export interface LootlogBattleDateDTO {
 }
 
 export interface PageLootlogBattleDateDTO {
-  /** @format int64 */
-  totalElements?: number;
   /** @format int32 */
   totalPages?: number;
+  /** @format int64 */
+  totalElements?: number;
+  pageable?: PageableObject;
+  /** @format int32 */
+  numberOfElements?: number;
   first?: boolean;
   last?: boolean;
   /** @format int32 */
@@ -266,9 +270,6 @@ export interface PageLootlogBattleDateDTO {
   /** @format int32 */
   number?: number;
   sort?: SortObject;
-  /** @format int32 */
-  numberOfElements?: number;
-  pageable?: PageableObject;
   empty?: boolean;
 }
 
@@ -607,6 +608,17 @@ export class Api<
         size?: number;
         /** Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
         sort?: string[];
+        baseNpcRank?:
+          | "NORMAL"
+          | "ELITE"
+          | "ELITE_II"
+          | "ELITE_III"
+          | "HERO"
+          | "TITAN";
+        /** @format int32 */
+        minLvl?: number;
+        /** @format int32 */
+        maxLvl?: number;
       },
       params: RequestParams = {},
     ) =>

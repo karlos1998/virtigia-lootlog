@@ -1,18 +1,6 @@
 import {
-  mdiAccountCircle,
-  mdiMonitor,
-  mdiGithub,
-  mdiLock,
-  mdiAlertCircle,
-  mdiSquareEditOutline,
-  mdiTable,
-  mdiViewList,
-  mdiTelevisionGuide,
-  mdiResponsive,
-  mdiPalette,
-  mdiReact,
+  mdiTable
 } from '@mdi/js'
-import router from '@/router/index.js'
 
 export default [
   // {
@@ -21,9 +9,30 @@ export default [
   //   label: 'Dashboard',
   // },
   {
-    to: '/battle-dates',
     label: 'Daty Bitew',
     icon: mdiTable,
+    menu: [
+      {
+        to: '/battle-dates',
+        label: 'Wszystkie',
+      },
+      {
+        to: '/battle-dates?baseNpcRank=ELITE',
+        label: 'Elity',
+      },
+      {
+        to: '/battle-dates?baseNpcRank=ELITE_II',
+        label: 'Elity II',
+      },
+      {
+        to: '/battle-dates?baseNpcRank=HERO',
+        label: 'Herosi',
+      },
+      {
+        to: '/battle-dates?baseNpcRank=TITAN',
+        label: 'Tytani',
+      },
+    ],
   },
   {
     to: '/battle-loots',

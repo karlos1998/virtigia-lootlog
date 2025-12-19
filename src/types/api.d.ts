@@ -142,7 +142,7 @@ export interface components {
             src?: string;
             attributes?: components["schemas"]["ItemAttributes"];
             /** @enum {string} */
-            category?: "oneHanded" | "armors" | "twoHanded" | "halfHanded" | "gloves" | "helmets" | "boots" | "rings" | "necklaces" | "shields" | "staffs" | "auxiliary" | "quests" | "consumable" | "neutrals" | "backpacks" | "wands" | "distances" | "arrows" | "talismans" | "upgrades" | "books" | "keys" | "golds";
+            category?: "oneHanded" | "armors" | "twoHanded" | "halfHanded" | "gloves" | "helmets" | "boots" | "rings" | "necklaces" | "shields" | "staffs" | "auxiliary" | "quests" | "consumable" | "neutrals" | "backpacks" | "wands" | "distances" | "arrows" | "talismans" | "upgrades" | "books" | "keys" | "golds" | "blessings";
             /** @enum {string} */
             currency?: "gold" | "unset" | "dragonTear" | "honor";
             /** Format: int32 */
@@ -228,10 +228,13 @@ export interface components {
             maxRespawnTime: number;
         };
         PageLootlogBattleRecordDTO: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
@@ -240,26 +243,23 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PageableObject: {
-            /** Format: int64 */
-            offset?: number;
-            sort?: components["schemas"]["SortObject"];
-            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
+            unpaged?: boolean;
+            /** Format: int64 */
+            offset?: number;
+            sort?: components["schemas"]["SortObject"];
         };
         SortObject: {
-            empty?: boolean;
             sorted?: boolean;
             unsorted?: boolean;
+            empty?: boolean;
         };
         LootlogBattleLootDTO: {
             id: string;
@@ -278,10 +278,13 @@ export interface components {
             items: components["schemas"]["LootItemDTO"][];
         };
         PageLootlogBattleLootDTO: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
@@ -290,9 +293,6 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         LootlogBattleDateDTO: {
@@ -306,10 +306,13 @@ export interface components {
             npcs: components["schemas"]["NpcDTO"][];
         };
         PageLootlogBattleDateDTO: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
@@ -318,9 +321,6 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
     };
@@ -446,6 +446,9 @@ export interface operations {
                 size?: number;
                 /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
                 sort?: string[];
+                baseNpcRank?: "NORMAL" | "ELITE" | "ELITE_II" | "ELITE_III" | "HERO" | "TITAN";
+                minLvl?: number;
+                maxLvl?: number;
             };
             header?: never;
             path?: never;

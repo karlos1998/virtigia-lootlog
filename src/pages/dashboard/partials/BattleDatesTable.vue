@@ -26,11 +26,22 @@ const loadTable = (page: number = 0) => {
   // Set loading state
   isLoading.value = true;
 
-  apiService.withAuth().lootlog.getAll2({
+  // Get baseNpcRank from route query params
+  const baseNpcRank = route.query.baseNpcRank as string | undefined;
+
+  // Build query params object
+  const queryParams: any = {
     page,
     size: 30,
     sort: 'updatedAt,desc'
-  }).then((data) => {
+  }
+
+  // Only add baseNpcRank if it exists (not 'Wszystkie')
+  if (baseNpcRank) {
+    queryParams.baseNpcRank = baseNpcRank
+  }
+
+  apiService.withAuth().lootlog.getAll2(queryParams).then((data) => {
     if(!data.content) return;
     // Update the table data
     tableData.value = data;
@@ -74,6 +85,11 @@ onMounted(() => {
   timeInterval = window.setInterval(() => {
     currentTime.value = new Date();
   }, 5000);
+});
+
+// Watch for changes in route query params and reload data
+watch(() => route.query.baseNpcRank, () => {
+  loadTable();
 });
 
 onUnmounted(() => {

@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useMainStore } from '@/stores/main.ts'
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { ApiService } from '@/services/api.service'
 import { mdiAccountMultiple, mdiReload } from '@mdi/js'
 import SectionMain from '@/components/SectionMain.vue'
@@ -11,7 +11,7 @@ import BattleDatesTable from '@/pages/dashboard/partials/BattleDatesTable.vue'
 import DropdownButton from '@/components/DropdownButton.vue'
 import DropdownMenuItem from '@/components/DropdownMenuItem.vue'
 
-const mainStore = useMainStore()
+const route = useRoute()
 const isLoading = ref(false)
 
 // Reference to the BattleDatesTable component
@@ -24,11 +24,22 @@ const refreshBattleDatesTable = () => {
   // Use the API service to reload the data
   const apiService = new ApiService()
 
-  apiService.withAuth().lootlog.getAll2({
+  // Get baseNpcRank from route query params
+  const baseNpcRank = route.query.baseNpcRank
+
+  // Build query params object
+  const queryParams = {
     page: 0,
     size: 30,
     sort: 'createdAt,desc'
-  }).then((data) => {
+  }
+
+  // Only add baseNpcRank if it exists
+  if (baseNpcRank) {
+    queryParams.baseNpcRank = baseNpcRank
+  }
+
+  apiService.withAuth().lootlog.getAll2(queryParams).then((data) => {
     if(!data.content) return
     // Update the table data directly
     if (battleDatesTableRef.value) {
