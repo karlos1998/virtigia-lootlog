@@ -26,8 +26,10 @@ const loadTable = (page: number = 0) => {
   // Set loading state
   isLoading.value = true;
 
-  // Get baseNpcRank from route query params
+  // Get query params
   const baseNpcRank = route.query.baseNpcRank as string | undefined;
+  const minLvl = route.query.minLvl as string | undefined
+  const maxLvl = route.query.maxLvl as string | undefined
 
   // Build query params object
   const queryParams: any = {
@@ -36,9 +38,17 @@ const loadTable = (page: number = 0) => {
     sort: 'updatedAt,desc'
   }
 
-  // Only add baseNpcRank if it exists (not 'Wszystkie')
+  // Only add baseNpcRank if it exists
   if (baseNpcRank) {
     queryParams.baseNpcRank = baseNpcRank
+  }
+
+  // Add level filters if they exist
+  if (minLvl) {
+    queryParams.minLvl = parseInt(minLvl)
+  }
+  if (maxLvl) {
+    queryParams.maxLvl = parseInt(maxLvl)
   }
 
   apiService.withAuth().lootlog.getAll2(queryParams).then((data) => {
@@ -88,7 +98,7 @@ onMounted(() => {
 });
 
 // Watch for changes in route query params and reload data
-watch(() => route.query.baseNpcRank, () => {
+watch(() => [route.query.baseNpcRank, route.query.minLvl, route.query.maxLvl], () => {
   loadTable();
 });
 
