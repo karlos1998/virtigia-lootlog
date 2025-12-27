@@ -163,11 +163,11 @@ const getCharacterNameById = (row: LootlogBattleLootDTO, characterId: string) =>
             v-for="item in row.items"
             v-tip.item="item.item"
             class="item"
-            :class="{ 'loot-highlight': true }"
+            :class="{ 'loot-highlight': !!getLootItemColor(row, item.id) }"
             :style="{
               backgroundImage: `url(${item.item.src})`,
               '--highlight-color': getLootItemColor(row, item.id),
-              boxShadow: `0 0 0 2px ${getLootItemColor(row, item.id)}, 0 0 10px ${getLootItemColor(row, item.id)}`
+              boxShadow: getLootItemColor(row, item.id) ? `0 0 0 2px ${getLootItemColor(row, item.id)}, 0 0 10px ${getLootItemColor(row, item.id)}` : ''
             }"
             @click="showItemDetails(item, row)"
           />
