@@ -115,6 +115,16 @@ const getCharacterNameById = (row: LootlogBattleLootDTO, characterId: string) =>
   const character = row.characters.find(char => char.id === characterId);
   return character ? character.name : 'Unknown';
 };
+
+// Function to check if row contains legendary items
+const hasLegendaryItems = (row: LootlogBattleLootDTO) => {
+  return row.items && row.items.some(item => item.item.rarity === 'legendary');
+};
+
+// Function to get row class for legendary highlighting
+const getRowClass = (row: LootlogBattleLootDTO) => {
+  return hasLegendaryItems(row) ? 'legendary-row' : '';
+};
 </script>
 
 <template>
@@ -127,7 +137,7 @@ const getCharacterNameById = (row: LootlogBattleLootDTO, characterId: string) =>
     <span v-else><span class="fresh">✓</span> Dane z: {{ formatDate(lastUpdated) }}</span>
   </div>
 
-  <AdvanceTable :data="tableData || { content: [] }" @change-page="changePage">
+  <AdvanceTable :data="tableData || { content: [] }" :row-class="getRowClass" @change-page="changePage">
     <Column header="Moby" name="npcs">
       <template #body="{ row }: SlotProps">
         <img
@@ -419,6 +429,14 @@ const getCharacterNameById = (row: LootlogBattleLootDTO, characterId: string) =>
     transform: scale(1);
     opacity: 0.2;
   }
+}
+
+.legendary-row {
+  background-color: #fce7f3;
+}
+
+.dark .legendary-row {
+  background-color: #831843;
 }
 
 /* Item details modal styles */

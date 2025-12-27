@@ -21,6 +21,7 @@ export interface PageDTO {
 
 const props = defineProps<{
   data: PageDTO
+  rowClass?: (row: T, index: number) => string
 }>()
 
 const slots = useSlots()
@@ -140,7 +141,7 @@ const changePage = (targetPage: number) => {
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(row, index) in data.content" :key="(row as any).id ?? index">
+      <tr v-for="(row, index) in data.content" :key="(row as any).id ?? index" :class="props.rowClass?.(row, index)">
         <td v-for="column in columns" :key="column.name" :data-label="column.header">
           <component
             :is="column.body"
