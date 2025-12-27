@@ -95,8 +95,8 @@ const getLootItemColor = (row: LootlogBattleLootDTO, itemId: string) => {
   if (!row.assignedItems) return '';
 
   // Find the assigned item to determine which character received this loot
-  // We need to find an assigned item where itemIds includes the id of the item
-  const assignedItem = row.assignedItems.find(item => item.itemIds.includes(itemId));
+  // We need to find an assigned item where lootItemId matches the item id
+  const assignedItem = row.assignedItems.find(item => item.lootItemId === itemId);
   if (!assignedItem) return '';
 
   // Generate a color based on the character ID who received the item
