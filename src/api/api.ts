@@ -535,7 +535,12 @@ export class Api<
          */
         size?: number;
         /** Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-        sort?: string[];
+        sort?: string | string[];
+        legendaryOnly?: boolean;
+        heroicOnly?: boolean;
+        characterName?: string;
+        npcName?: string;
+        onlyMine?: boolean;
       },
       params: RequestParams = {},
     ) =>

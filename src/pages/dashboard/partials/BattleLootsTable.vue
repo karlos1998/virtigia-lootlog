@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { LootlogBattleLootDTO, NpcDTO, CharacterLiteDTO, AssignedItem, LootItemDTO } from '@/api/api'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { LootlogBattleLootDTO, LootItemDTO, PageLootlogBattleLootDTO } from '@/api/api'
 import AdvanceTable from '@/components/AdvanceTable.vue'
 import Column from '@/components/Column.vue'
-import { useRoute, useRouter } from 'vue-router'
 import { ApiService } from '@/services/api.service'
-import { useMainStore } from '@/stores/main'
 import CardBoxModal from '@/components/CardBoxModal.vue'
 import BaseButton from '@/components/BaseButton.vue'
-import { mdiInformationOutline } from '@mdi/js'
+import { mdiClose } from '@mdi/js'
 
 // Function to generate a unique color for each loot item
 const generateUniqueColor = (id: string) => {
@@ -23,29 +21,75 @@ const generateUniqueColor = (id: string) => {
   return `hsl(${h}, 80%, 65%)`;
 }
 
-const router = useRouter();
 const apiService = new ApiService();
-const mainStore = useMainStore();
-
-const route = useRoute();
 
 // Table data state
-const tableData = ref(null);
+const tableData = ref<PageLootlogBattleLootDTO | null>(null);
 const isLoading = ref(false);
-const lastUpdated = ref(null);
+const lastUpdated = ref<Date | null>(null);
 const isModalActive = ref(false);
-const selectedItem = ref(null);
-const selectedRow = ref(null);
+const selectedItem = ref<LootItemDTO | null>(null);
+const selectedRow = ref<LootlogBattleLootDTO | null>(null);
+const legendaryOnly = ref(false);
+const heroicOnly = ref(false);
+const onlyMine = ref(false);
+const characterName = ref('');
+const npcName = ref('');
+const suspendFilterWatch = ref(false);
+let textFilterReloadTimeout: ReturnType<typeof setTimeout> | null = null;
+
+type BattleLootQuery = {
+  page: number
+  size: number
+  sort: string
+  legendaryOnly?: boolean
+  heroicOnly?: boolean
+  onlyMine?: boolean
+  characterName?: string
+  npcName?: string
+}
+
+const activeFiltersCount = computed(() => {
+  return [
+    legendaryOnly.value,
+    heroicOnly.value,
+    onlyMine.value,
+    characterName.value.trim().length > 0,
+    npcName.value.trim().length > 0,
+  ].filter(Boolean).length;
+});
+
+const buildQuery = (page: number): BattleLootQuery => {
+  const query: BattleLootQuery = {
+    page,
+    size: 30,
+    sort: 'createdAt,desc',
+  };
+
+  if (legendaryOnly.value) {
+    query.legendaryOnly = true;
+  }
+  if (heroicOnly.value) {
+    query.heroicOnly = true;
+  }
+  if (onlyMine.value) {
+    query.onlyMine = true;
+  }
+  if (characterName.value.trim()) {
+    query.characterName = characterName.value.trim();
+  }
+  if (npcName.value.trim()) {
+    query.npcName = npcName.value.trim();
+  }
+
+  return query;
+};
 
 const loadTable = (page: number = 0) => {
   // Set loading state
   isLoading.value = true;
 
-  apiService.withAuth().lootlog.getAll1({
-    page,
-    size: 30,
-    sort: 'createdAt,desc'
-  }).then((data) => {
+  apiService.withAuth().lootlog.getAll1(buildQuery(page) as any).then((data) => {
     if(!data.content) return;
     // Update the table data
     tableData.value = data;
@@ -59,10 +103,53 @@ const loadTable = (page: number = 0) => {
   });
 }
 
+const refresh = () => {
+  loadTable(tableData.value?.number ?? 0);
+};
+
+const clearFilters = () => {
+  suspendFilterWatch.value = true;
+  legendaryOnly.value = false;
+  heroicOnly.value = false;
+  onlyMine.value = false;
+  characterName.value = '';
+  npcName.value = '';
+
+  nextTick(() => {
+    suspendFilterWatch.value = false;
+    loadTable(0);
+  });
+};
+
+const scheduleTextFilterReload = () => {
+  if (suspendFilterWatch.value) {
+    return;
+  }
+  if (textFilterReloadTimeout) {
+    clearTimeout(textFilterReloadTimeout);
+  }
+  textFilterReloadTimeout = setTimeout(() => loadTable(0), 350);
+};
+
 onMounted(() => {
   // Load data when component is mounted
   loadTable();
 });
+
+onBeforeUnmount(() => {
+  if (textFilterReloadTimeout) {
+    clearTimeout(textFilterReloadTimeout);
+  }
+});
+
+watch([characterName, npcName], scheduleTextFilterReload);
+watch([legendaryOnly, heroicOnly, onlyMine], () => {
+  if (!suspendFilterWatch.value) {
+    loadTable(0);
+  }
+});
+
+defineExpose({ refresh });
 
 const changePage = (targetPage: number) => {
   loadTable(targetPage);
@@ -135,6 +222,49 @@ const getRowClass = (row: LootlogBattleLootDTO) => {
   <div v-if="lastUpdated" class="last-updated">
     <span v-if="isLoading"><span class="loading">⟳</span> Ładowanie nowych danych, pokazuję dane z: {{ formatDate(lastUpdated) }}</span>
     <span v-else><span class="fresh">✓</span> Dane z: {{ formatDate(lastUpdated) }}</span>
+  </div>
+
+  <div class="loot-filter-panel">
+    <div class="loot-filter-grid">
+      <label class="loot-filter-field">
+        <span>Gracz</span>
+        <input v-model.trim="characterName" type="search" placeholder="Nazwa gracza" />
+      </label>
+
+      <label class="loot-filter-field">
+        <span>Mob</span>
+        <input v-model.trim="npcName" type="search" placeholder="Nazwa moba" />
+      </label>
+
+      <div class="loot-filter-toggles">
+        <label class="loot-filter-toggle">
+          <input v-model="legendaryOnly" type="checkbox" />
+          <span>Legendarne</span>
+        </label>
+
+        <label class="loot-filter-toggle">
+          <input v-model="heroicOnly" type="checkbox" />
+          <span>Heroiczne</span>
+        </label>
+
+        <label class="loot-filter-toggle">
+          <input v-model="onlyMine" type="checkbox" />
+          <span>Tylko moje</span>
+        </label>
+      </div>
+
+      <div class="loot-filter-actions">
+        <span v-if="activeFiltersCount" class="loot-filter-counter">{{ activeFiltersCount }} aktywne</span>
+        <BaseButton
+          v-if="activeFiltersCount"
+          :icon="mdiClose"
+          label="Wyczyść"
+          color="lightDark"
+          small
+          @click="clearFilters"
+        />
+      </div>
+    </div>
   </div>
 
   <AdvanceTable :data="tableData || { content: [] }" :row-class="getRowClass" @change-page="changePage">
@@ -288,6 +418,127 @@ const getRowClass = (row: LootlogBattleLootDTO) => {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+}
+
+.loot-filter-panel {
+  margin: 14px 14px 16px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.dark .loot-filter-panel {
+  border-color: #334155;
+  background: #0f172a;
+}
+
+.loot-filter-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.loot-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.dark .loot-filter-field {
+  color: #cbd5e1;
+}
+
+.loot-filter-field input {
+  height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111827;
+  padding: 0 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.dark .loot-filter-field input {
+  border-color: #475569;
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.loot-filter-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.loot-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.dark .loot-filter-toggle {
+  border-color: #475569;
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+.loot-filter-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+}
+
+.loot-filter-actions {
+  min-height: 38px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.loot-filter-counter {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dark .loot-filter-counter {
+  color: #94a3b8;
+}
+
+@media (max-width: 1024px) {
+  .loot-filter-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .loot-filter-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .loot-filter-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .character,
