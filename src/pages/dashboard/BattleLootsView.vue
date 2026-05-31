@@ -1,13 +1,12 @@
 <script setup>
 import { ref } from 'vue'
-import { mdiAccountMultiple, mdiReload } from '@mdi/js'
+import { mdiReload, mdiTreasureChest } from '@mdi/js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBox from '@/components/CardBox.vue'
 import LayoutAuthenticated from '@/layouts/LayoutAuthenticated.vue'
 import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
 import BattleLootsTable from '@/pages/dashboard/partials/BattleLootsTable.vue'
-import DropdownButton from '@/components/DropdownButton.vue'
-import DropdownMenuItem from '@/components/DropdownMenuItem.vue'
+import BaseButton from '@/components/BaseButton.vue'
 
 // Reference to the BattleLootsTable component
 const battleLootsTableRef = ref(null)
@@ -20,10 +19,8 @@ const refreshBattleLootsTable = () => {
 <template>
   <LayoutAuthenticated>
     <SectionMain>
-      <SectionTitleLineWithButton :icon="mdiAccountMultiple" title="Łupy Bitewne">
-        <DropdownButton>
-          <DropdownMenuItem :icon="mdiReload" label="Odśwież" @click="refreshBattleLootsTable" />
-        </DropdownButton>
+      <SectionTitleLineWithButton :icon="mdiTreasureChest" title="Łupy bitewne">
+        <BaseButton :icon="mdiReload" label="Odśwież" color="info" @click="refreshBattleLootsTable" />
       </SectionTitleLineWithButton>
 
       <CardBox has-table>

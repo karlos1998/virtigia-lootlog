@@ -1,6 +1,6 @@
 {
-  "name": "admin-one-vue-tailwind",
-  "version": "4.0.0",
+  "name": "virtigia-lootlog",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,8 +15,6 @@
   "dependencies": {
     "@mdi/js": "^7.4.47",
     "axios": "1.8.2",
-    "chart.js": "^4.4.0",
-    "numeral": "^2.0.6",
     "pinia": "^3.0.1",
     "pinia-plugin-persistedstate": "^4.2.0",
     "virtigia-tips": "^1.0.19",

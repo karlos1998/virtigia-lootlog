@@ -21,7 +21,7 @@ const hasSlot = computed(() => useSlots().default)
 </script>
 
 <template>
-  <section :class="{ 'pt-6': !main }" class="mb-6 flex items-center justify-between">
+  <section :class="{ 'pt-6': !main }" class="lootlog-section-title mb-5 flex items-center justify-between">
     <div class="flex items-center justify-start">
       <IconRounded v-if="icon && main" :icon="icon" color="light" class="mr-3" bg />
       <BaseIcon v-else-if="icon" :path="icon" class="mr-2" size="20" />

@@ -1,11 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axios from 'axios'
 import { LootlogUserDTO } from '@/api/api'
 
 export const useMainStore = defineStore('main', () => {
-  const userName = ref('John Doe')
-  const userEmail = ref('doe.doe.doe@example.com')
+  const userName = ref('Nieznany gracz')
+  const userEmail = ref('')
 
   const userAvatar = computed(
     () =>
@@ -16,8 +15,6 @@ export const useMainStore = defineStore('main', () => {
   const baseAssetsPath = ref();
 
   const isFieldFocusRegistered = ref(false)
-
-  const clients = ref([])
 
   function setUser(payload: LootlogUserDTO) {
     if (payload.name) {
@@ -39,8 +36,6 @@ export const useMainStore = defineStore('main', () => {
     userEmail,
     userAvatar,
     isFieldFocusRegistered,
-    clients,
-    history,
     setUser,
     baseAssetsPath
   }

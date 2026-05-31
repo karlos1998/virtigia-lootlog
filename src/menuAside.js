@@ -1,16 +1,17 @@
 import {
-  mdiTable
+  mdiCalendarClock,
+  mdiCrown,
+  mdiDiamondStone,
+  mdiShieldCrownOutline,
+  mdiSkull,
+  mdiSwordCross,
+  mdiTreasureChest,
 } from '@mdi/js'
 
 export default [
-  // {
-  //   to: '/',
-  //   icon: mdiMonitor,
-  //   label: 'Dashboard',
-  // },
   {
-    label: 'Daty Bitew',
-    icon: mdiTable,
+    label: 'Respawny',
+    icon: mdiCalendarClock,
     menu: [
       {
         to: '/battle-dates',
@@ -19,88 +20,33 @@ export default [
       {
         to: '/battle-dates?baseNpcRank=ELITE',
         label: 'Elity',
+        icon: mdiSwordCross,
       },
       {
         to: '/battle-dates?baseNpcRank=ELITE_II',
         label: 'Elity II',
+        icon: mdiShieldCrownOutline,
       },
       {
         to: '/battle-dates?baseNpcRank=HERO',
         label: 'Herosi',
+        icon: mdiCrown,
       },
       {
         to: '/battle-dates?baseNpcRank=TITAN',
         label: 'Tytani',
+        icon: mdiSkull,
       },
     ],
   },
   {
     to: '/battle-loots',
-    label: 'Łupy Bitewne',
-    icon: mdiTable,
+    label: 'Łupy bitewne',
+    icon: mdiTreasureChest,
   },
-  // {
-  //   to: '/tables',
-  //   label: 'Tables',
-  //   icon: mdiTable,
-  // },
-  // {
-  //   to: '/forms',
-  //   label: 'Forms',
-  //   icon: mdiSquareEditOutline,
-  // },
-  // {
-  //   to: '/ui',
-  //   label: 'UI',
-  //   icon: mdiTelevisionGuide,
-  // },
-  // {
-  //   to: '/responsive',
-  //   label: 'Responsive',
-  //   icon: mdiResponsive,
-  // },
-  // {
-  //   to: '/',
-  //   label: 'Styles',
-  //   icon: mdiPalette,
-  // },
-  // {
-  //   to: '/profile',
-  //   label: 'Profile',
-  //   icon: mdiAccountCircle,
-  // },
-  // {
-  //   to: '/login',
-  //   label: 'Login',
-  //   icon: mdiLock,
-  // },
-  // {
-  //   to: '/error',
-  //   label: 'Error',
-  //   icon: mdiAlertCircle,
-  // },
-  // {
-  //   label: 'Dropdown',
-  //   icon: mdiViewList,
-  //   menu: [
-  //     {
-  //       label: 'Item One',
-  //     },
-  //     {
-  //       label: 'Item Two',
-  //     },
-  //   ],
-  // },
-  // {
-  //   href: 'https://github.com/justboil/admin-one-vue-tailwind',
-  //   label: 'GitHub',
-  //   icon: mdiGithub,
-  //   target: '_blank',
-  // },
-  // {
-  //   href: 'https://margatron.ovh',
-  //   label: 'Margatron',
-  //   icon: mdiReact,
-  //   target: '_blank',
-  // },
+  {
+    to: '/battle-loots?legendaryOnly=true',
+    label: 'Legendarne',
+    icon: mdiDiamondStone,
+  },
 ]

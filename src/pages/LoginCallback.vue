@@ -82,7 +82,7 @@ onMounted(async () => {
 
 <template>
   <LayoutGuest>
-    <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
+    <SectionFullScreen v-slot="{ cardClass }" bg="game">
       <CardBox :class="cardClass" is-form>
         <div v-if="loading">
           Autoryzacja, proszę czekać....
@@ -98,7 +98,7 @@ onMounted(async () => {
             <select
               id="worldSelect"
               v-model="selectedWorldId"
-              class="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+              class="w-full rounded px-3 py-2"
             >
               <option v-for="world in worlds" :key="world.id" :value="world.id">
                 {{ world.label }}

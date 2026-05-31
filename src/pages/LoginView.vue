@@ -1,5 +1,4 @@
 <script setup>
-import { useRouter } from 'vue-router'
 import SectionFullScreen from '@/components/SectionFullScreen.vue'
 import CardBox from '@/components/CardBox.vue'
 import BaseButton from '@/components/BaseButton.vue'
@@ -22,12 +21,12 @@ const submit = () => {
 
 <template>
   <LayoutGuest>
-    <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
+    <SectionFullScreen v-slot="{ cardClass }" bg="game">
       <CardBox :class="cardClass" is-form @submit.prevent="submit">
 
         <template #footer>
           <BaseButtons>
-            <BaseButton type="submit" color="info" label="Zaloguj przy użyciu konta Margatron" />
+            <BaseButton type="submit" color="info" label="Zaloguj przez Margatron" />
           </BaseButtons>
         </template>
       </CardBox>

@@ -6,7 +6,7 @@ import CardBoxComponentFooter from '@/components/CardBoxComponentFooter.vue'
 const props = defineProps({
   rounded: {
     type: String,
-    default: 'rounded-2xl',
+    default: 'rounded-lg',
   },
   flex: {
     type: String,
@@ -29,7 +29,8 @@ const componentClass = computed(() => {
   const base = [
     props.rounded,
     props.flex,
-    props.isModal ? 'dark:bg-slate-900' : 'dark:bg-slate-900/70',
+    'game-card',
+    props.isModal ? 'game-card-modal' : '',
   ]
 
   if (props.isHoverable) {
@@ -48,7 +49,7 @@ const submit = (event) => {
   <component
     :is="isForm ? 'form' : 'div'"
     :class="componentClass"
-    class="bg-white flex"
+    class="flex"
     @submit="submit"
   >
     <slot v-if="hasComponentLayout" />

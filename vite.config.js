@@ -14,8 +14,6 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: [
-        // 'favicon.svg',
-        // 'robots.txt',
         'apple-touch-icon.png'
       ],
       manifest: {
@@ -23,8 +21,8 @@ export default defineConfig({
         name: 'LootLog Margatron',
         short_name: 'LootLog',
         description: 'LootLog Margatron as PWA',
-        theme_color: '#0f172a',
-        background_color: '#ffffff',
+        theme_color: '#071f0a',
+        background_color: '#031306',
         display: 'standalone',
         start_url: '/',
         icons: [
@@ -71,30 +69,28 @@ export default defineConfig({
             }
           },
           {
-            // Cache API requests
             urlPattern: /^https:\/\/mbp-karol-java\.letscode\.it\/api\/lootlog/,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24, // 1 day
+                maxAgeSeconds: 60 * 60 * 24,
               },
-              networkTimeoutSeconds: 20, // Timeout after 20 seconds
+              networkTimeoutSeconds: 20,
               cacheableResponse: {
                 statuses: [0, 200]
               }
             }
           },
           {
-            // Cache image assets
             urlPattern: /\.(png|jpg|jpeg|svg|gif)$/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'image-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                maxAgeSeconds: 60 * 60 * 24 * 30,
               }
             }
           }

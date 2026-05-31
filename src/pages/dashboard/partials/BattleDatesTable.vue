@@ -13,37 +13,30 @@ const mainStore = useMainStore();
 
 const route = useRoute();
 
-// Table data state
 const tableData = ref(null);
 const isLoading = ref(false);
 const lastUpdated = ref(null);
-const currentTime = ref(new Date()); // Current time for respawn probability calculation
+const currentTime = ref(new Date());
 
-// Update current time every second
 let timeInterval: number | null = null;
 
 const loadTable = (page: number = 0) => {
-  // Set loading state
   isLoading.value = true;
 
-  // Get query params
   const baseNpcRank = route.query.baseNpcRank as string | undefined;
   const minLvl = route.query.minLvl as string | undefined
   const maxLvl = route.query.maxLvl as string | undefined
 
-  // Build query params object
   const queryParams: any = {
     page,
     size: 30,
     sort: 'updatedAt,desc'
   }
 
-  // Only add baseNpcRank if it exists
   if (baseNpcRank) {
     queryParams.baseNpcRank = baseNpcRank
   }
 
-  // Add level filters if they exist
   if (minLvl) {
     queryParams.minLvl = parseInt(minLvl)
   }
@@ -53,9 +46,7 @@ const loadTable = (page: number = 0) => {
 
   apiService.withAuth().lootlog.getAll2(queryParams).then((data) => {
     if(!data.content) return;
-    // Update the table data
     tableData.value = data;
-    // Update last updated timestamp
     lastUpdated.value = new Date();
   }).catch((error) => {
     console.error('Failed to load battle dates data:', error);
@@ -65,21 +56,17 @@ const loadTable = (page: number = 0) => {
   });
 }
 
-// Calculate respawn probability percentage
 const calculateRespawnProbability = (minRespawnTime: Date, maxRespawnTime: Date): number => {
   const now = currentTime.value;
 
-  // If current time is before min respawn time, probability is 0%
   if (now < minRespawnTime) {
     return 0;
   }
 
-  // If current time is after max respawn time, probability is 100%
   if (now > maxRespawnTime) {
     return 100;
   }
 
-  // Calculate percentage between min and max respawn times
   const totalTimeRange = maxRespawnTime.getTime() - minRespawnTime.getTime();
   const timeElapsed = now.getTime() - minRespawnTime.getTime();
   const percentage = (timeElapsed / totalTimeRange) * 100;
@@ -88,22 +75,18 @@ const calculateRespawnProbability = (minRespawnTime: Date, maxRespawnTime: Date)
 };
 
 onMounted(() => {
-  // Load data when component is mounted
   loadTable();
 
-  // Set up interval to update current time every 5 seconds
   timeInterval = window.setInterval(() => {
     currentTime.value = new Date();
   }, 5000);
 });
 
-// Watch for changes in route query params and reload data
 watch(() => [route.query.baseNpcRank, route.query.minLvl, route.query.maxLvl], () => {
   loadTable();
 });
 
 onUnmounted(() => {
-  // Clear interval when component is unmounted
   if (timeInterval !== null) {
     clearInterval(timeInterval);
   }
@@ -113,17 +96,21 @@ const changePage = (targetPage: number) => {
   loadTable(targetPage);
 }
 
+const refresh = () => {
+  loadTable(tableData.value?.number ?? 0);
+}
+
+defineExpose({ refresh })
+
 type SlotProps = {
   row: LootlogBattleDateDTO
   index: number
 }
 
-// Format date for display
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleString();
 }
 
-// Find NPC with highest maxRespawnTime in a row
 const findNpcWithHighestMaxRespawnTime = (row: LootlogBattleDateDTO): NpcDTO | null => {
   if (!row.npcs || row.npcs.length === 0) return null;
 
@@ -132,24 +119,20 @@ const findNpcWithHighestMaxRespawnTime = (row: LootlogBattleDateDTO): NpcDTO | n
   }, row.npcs[0]);
 }
 
-// Calculate minimum respawn time by adding minRespawnTime (in seconds) to updatedAt
 const calculateMinRespawnTime = (updatedAt: string, minRespawnTime: number): Date => {
   const updatedAtDate = new Date(updatedAt);
-  return new Date(updatedAtDate.getTime() + minRespawnTime * 1000); // Convert seconds to milliseconds
+  return new Date(updatedAtDate.getTime() + minRespawnTime * 1000);
 }
 
-// Calculate maximum respawn time by adding maxRespawnTime (in seconds) to updatedAt
 const calculateMaxRespawnTime = (updatedAt: string, maxRespawnTime: number): Date => {
   const updatedAtDate = new Date(updatedAt);
-  return new Date(updatedAtDate.getTime() + maxRespawnTime * 1000); // Convert seconds to milliseconds
+  return new Date(updatedAtDate.getTime() + maxRespawnTime * 1000);
 }
 </script>
 
 <template>
-  <!-- Loading indicator -->
   <div v-if="isLoading" class="loading-bar"></div>
 
-  <!-- Last updated timestamp -->
   <div v-if="lastUpdated" class="last-updated">
     <span v-if="isLoading"><span class="loading">⟳</span> Ładowanie nowych danych, pokazuję dane z: {{ formatDate(lastUpdated) }}</span>
     <span v-else><span class="fresh">✓</span> Dane z: {{ formatDate(lastUpdated) }}</span>
@@ -160,8 +143,9 @@ const calculateMaxRespawnTime = (updatedAt: string, maxRespawnTime: number): Dat
       <template #body="{ row }: SlotProps">
         <img
           v-for="npc in row.npcs"
+          :key="npc.id"
           v-tip.npc="npc"
-          class="npc"
+          class="battle-npc-sprite"
           :src="npc.src"
         />
       </template>
@@ -171,8 +155,9 @@ const calculateMaxRespawnTime = (updatedAt: string, maxRespawnTime: number): Dat
         <div class="character-wrapper">
           <div
             v-for="character in row.characters"
+            :key="character.id"
             v-tip.other="{...character, level: character.lvl}"
-            class="character"
+            class="battle-character-sprite"
             :style="{
               backgroundImage: `url(${character.src})`
             }"
@@ -191,7 +176,7 @@ const calculateMaxRespawnTime = (updatedAt: string, maxRespawnTime: number): Dat
       <template #body="{ row }: SlotProps">
         <div v-if="findNpcWithHighestMaxRespawnTime(row)">
           <div>
-            <strong>{{ findNpcWithHighestMaxRespawnTime(row)?.name }}</strong>
+            <strong class="respawn-name">{{ findNpcWithHighestMaxRespawnTime(row)?.name }}</strong>
           </div>
           <div>
             Min: {{ formatDate(calculateMinRespawnTime(row.updatedAt, findNpcWithHighestMaxRespawnTime(row)?.minRespawnTime || 0)) }}
@@ -200,7 +185,6 @@ const calculateMaxRespawnTime = (updatedAt: string, maxRespawnTime: number): Dat
             Max: {{ formatDate(calculateMaxRespawnTime(row.updatedAt, findNpcWithHighestMaxRespawnTime(row)?.maxRespawnTime || 0)) }}
           </div>
 
-          <!-- Respawn probability -->
           <div class="respawn-probability mt-2">
             <div class="flex items-center">
               <div class="respawn-probability-label">
@@ -230,7 +214,6 @@ const calculateMaxRespawnTime = (updatedAt: string, maxRespawnTime: number): Dat
 
     <template #empty>
       <div class="empty-state">
-        <div class="empty-state-icon">📋</div>
         <h3 class="empty-state-title">Brak danych do wyświetlenia</h3>
         <p class="empty-state-message">
           Nie znaleziono żadnych zapisów dat bitew.
@@ -241,19 +224,27 @@ const calculateMaxRespawnTime = (updatedAt: string, maxRespawnTime: number): Dat
   </AdvanceTable>
 </template>
 
-<style>
-.item {
-  width: 32px;
-  height: 32px;
+<style scoped>
+.battle-npc-sprite {
+  max-width: 64px;
+  max-height: 64px;
+  object-fit: contain;
+  padding: 2px;
+  border: 1px solid rgba(214, 179, 92, 0.34);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.28);
 }
 
-.character {
+.battle-character-sprite {
   width: 32px;
   height: 48px;
-}
-
-.npc {
-  max-width: 64px;
+  margin: 2px;
+  border: 1px solid rgba(214, 179, 92, 0.26);
+  border-radius: 4px;
+  background-repeat: no-repeat;
+  background-size: auto 192px;
+  background-position: left top;
+  background-color: rgba(0, 0, 0, 0.24);
 }
 
 .character-wrapper,
@@ -263,14 +254,9 @@ const calculateMaxRespawnTime = (updatedAt: string, maxRespawnTime: number): Dat
   gap: 5px;
 }
 
-.character,
-.item {
-  margin: 2px;
-}
-
 .loading-bar {
   height: 4px;
-  background: linear-gradient(90deg, #4f46e5, #818cf8, #a78bfa, #818cf8, #4f46e5);
+  background: linear-gradient(90deg, #5b3a17, #d6b35c, #2f7a2f, #d6b35c, #5b3a17);
   background-size: 200% 100%;
   width: 100%;
   position: relative;
@@ -278,7 +264,7 @@ const calculateMaxRespawnTime = (updatedAt: string, maxRespawnTime: number): Dat
   animation: loading 2s infinite ease-in-out;
   margin-bottom: 10px;
   border-radius: 4px;
-  box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+  box-shadow: 0 0 10px rgba(214, 179, 92, 0.36);
   transform-origin: center;
   transition: all 0.3s ease;
 }
@@ -307,107 +293,78 @@ const calculateMaxRespawnTime = (updatedAt: string, maxRespawnTime: number): Dat
   margin-bottom: 15px;
   text-align: center;
   padding: 8px 12px;
-  background-color: #f9fafb;
+  background: linear-gradient(180deg, rgba(18, 55, 16, 0.82), rgba(5, 20, 7, 0.94));
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e5e7eb;
-}
-
-.last-updated span {
-  display: inline-block;
-}
-
-.dark .last-updated {
-  background-color: #1f2937;
-  border-color: #374151;
-  color: #9ca3af;
+  border: 1px solid var(--game-border-muted);
+  color: var(--game-text-muted);
 }
 
 .loading {
-  color: #6366f1;
+  color: var(--game-gold-300);
   margin-right: 4px;
 }
 
 .fresh {
-  color: #10b981;
+  color: #7ee787;
   margin-right: 4px;
 }
 
 .cached {
-  color: #f59e0b;
+  color: var(--game-gold-300);
   margin-right: 4px;
 }
 
 .empty-state {
   padding: 2rem;
   text-align: center;
-  border-radius: 0.5rem;
+  border: 1px solid var(--game-border-muted);
+  border-radius: 6px;
   margin: 1rem 0;
-}
-
-.empty-state-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .empty-state-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--game-gold-300);
   margin-bottom: 0.5rem;
 }
 
-.dark .empty-state-title {
-  color: #f3f4f6;
-}
-
 .empty-state-message {
-  color: #6b7280;
+  color: var(--game-text-muted);
   max-width: 24rem;
   margin: 0 auto;
   line-height: 1.5;
 }
 
-/* Respawn probability styles */
 .respawn-probability {
   margin-top: 10px;
+}
+
+.respawn-name {
+  color: var(--game-gold-300);
 }
 
 .respawn-probability-label {
   font-size: 0.875rem;
   margin-bottom: 4px;
+  color: var(--game-text-muted);
 }
 
 .respawn-progress-container {
   height: 8px;
-  background-color: #e5e7eb;
+  background-color: rgba(0, 0, 0, 0.38);
   border-radius: 4px;
+  border: 1px solid rgba(214, 179, 92, 0.24);
   overflow: hidden;
   margin-top: 4px;
 }
 
 .respawn-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #10b981, #34d399);
+  background: linear-gradient(90deg, #91651f, #e8c76b, #74b45e);
   border-radius: 4px;
   transition: width 0.5s ease;
-}
-
-.dark .respawn-progress-container {
-  background-color: #374151;
-}
-
-/* Add utility class for margin-top */
-.mt-2 {
-  margin-top: 0.5rem;
-}
-
-/* Add utility class for flex items */
-.flex {
-  display: flex;
-}
-
-.items-center {
-  align-items: center;
 }
 </style>

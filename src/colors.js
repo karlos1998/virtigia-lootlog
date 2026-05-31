@@ -2,15 +2,16 @@ export const gradientBgBase = 'bg-linear-to-tr'
 export const gradientBgPurplePink = `${gradientBgBase} from-purple-400 via-pink-500 to-red-500`
 export const gradientBgDark = `${gradientBgBase} from-slate-700 via-slate-900 to-slate-800`
 export const gradientBgPinkRed = `${gradientBgBase} from-pink-400 via-red-500 to-yellow-500`
+export const gradientBgGame = 'game-login-bg'
 
 export const colorsBgLight = {
   white: 'bg-white text-black',
   light: 'bg-white text-black dark:bg-slate-900/70 dark:text-white',
   contrast: 'bg-gray-800 text-white dark:bg-white dark:text-black',
-  success: 'bg-emerald-500 border-emerald-500 text-white',
-  danger: 'bg-red-500 border-red-500 text-white',
-  warning: 'bg-yellow-500 border-yellow-500 text-white',
-  info: 'bg-blue-500 border-blue-500 text-white',
+  success: 'bg-emerald-700 border-emerald-600 text-amber-50',
+  danger: 'bg-red-700 border-red-600 text-white',
+  warning: 'bg-amber-700 border-amber-600 text-amber-50',
+  info: 'bg-lime-800 border-lime-700 text-amber-50',
 }
 
 export const colorsText = {
@@ -19,8 +20,8 @@ export const colorsText = {
   contrast: 'dark:text-white',
   success: 'text-emerald-500',
   danger: 'text-red-500',
-  warning: 'text-yellow-500',
-  info: 'text-blue-500',
+  warning: 'text-amber-400',
+  info: 'text-lime-300',
 }
 
 export const colorsOutline = {
@@ -29,8 +30,8 @@ export const colorsOutline = {
   contrast: [colorsText.contrast, 'border-gray-900 dark:border-slate-100'],
   success: [colorsText.success, 'border-emerald-500'],
   danger: [colorsText.danger, 'border-red-500'],
-  warning: [colorsText.warning, 'border-yellow-500'],
-  info: [colorsText.info, 'border-blue-500'],
+  warning: [colorsText.warning, 'border-amber-500'],
+  info: [colorsText.info, 'border-lime-600'],
 }
 
 export const getButtonColor = (color, isOutlined, hasHover, isActive = false) => {
@@ -41,9 +42,9 @@ export const getButtonColor = (color, isOutlined, hasHover, isActive = false) =>
       lightDark: 'ring-gray-200 dark:ring-gray-500',
       contrast: 'ring-gray-300 dark:ring-gray-400',
       success: 'ring-emerald-300 dark:ring-emerald-700',
-      danger: 'ring-red-300 dark:ring-red-700',
-      warning: 'ring-yellow-300 dark:ring-yellow-700',
-      info: 'ring-blue-300 dark:ring-blue-700',
+      danger: 'ring-red-800 dark:ring-red-700',
+      warning: 'ring-amber-700 dark:ring-amber-700',
+      info: 'ring-lime-800 dark:ring-lime-700',
     },
     active: {
       white: 'bg-gray-100',
@@ -52,18 +53,18 @@ export const getButtonColor = (color, isOutlined, hasHover, isActive = false) =>
       contrast: 'bg-gray-700 dark:bg-slate-100',
       success: 'bg-emerald-700 dark:bg-emerald-600',
       danger: 'bg-red-700 dark:bg-red-600',
-      warning: 'bg-yellow-700 dark:bg-yellow-600',
-      info: 'bg-blue-700 dark:bg-blue-600',
+      warning: 'bg-amber-800 dark:bg-amber-700',
+      info: 'bg-lime-900 dark:bg-lime-800',
     },
     bg: {
       white: 'bg-white text-black',
       whiteDark: 'bg-white text-black dark:bg-slate-900 dark:text-white',
       lightDark: 'bg-gray-100 text-black dark:bg-slate-800 dark:text-white',
       contrast: 'bg-gray-800 text-white dark:bg-white dark:text-black',
-      success: 'bg-emerald-600 dark:bg-emerald-500 text-white',
+      success: 'bg-emerald-800 dark:bg-emerald-700 text-amber-50',
       danger: 'bg-red-600 dark:bg-red-500 text-white',
-      warning: 'bg-yellow-600 dark:bg-yellow-500 text-white',
-      info: 'bg-blue-600 dark:bg-blue-500 text-white',
+      warning: 'bg-amber-700 dark:bg-amber-600 text-amber-50',
+      info: 'bg-lime-800 dark:bg-lime-700 text-amber-50',
     },
     bgHover: {
       white: 'hover:bg-gray-100',
@@ -73,10 +74,10 @@ export const getButtonColor = (color, isOutlined, hasHover, isActive = false) =>
       success:
         'hover:bg-emerald-700 hover:border-emerald-700 dark:hover:bg-emerald-600 dark:hover:border-emerald-600',
       danger:
-        'hover:bg-red-700 hover:border-red-700 dark:hover:bg-red-600 dark:hover:border-red-600',
+        'hover:bg-red-800 hover:border-red-700 dark:hover:bg-red-600 dark:hover:border-red-600',
       warning:
-        'hover:bg-yellow-700 hover:border-yellow-700 dark:hover:bg-yellow-600 dark:hover:border-yellow-600',
-      info: 'hover:bg-blue-700 hover:border-blue-700 dark:hover:bg-blue-600 dark:hover:border-blue-600',
+        'hover:bg-amber-800 hover:border-amber-700 dark:hover:bg-amber-700 dark:hover:border-amber-600',
+      info: 'hover:bg-lime-700 hover:border-lime-600 dark:hover:bg-lime-700 dark:hover:border-lime-600',
     },
     borders: {
       white: 'border-white',
@@ -85,15 +86,15 @@ export const getButtonColor = (color, isOutlined, hasHover, isActive = false) =>
       contrast: 'border-gray-800 dark:border-white',
       success: 'border-emerald-600 dark:border-emerald-500',
       danger: 'border-red-600 dark:border-red-500',
-      warning: 'border-yellow-600 dark:border-yellow-500',
-      info: 'border-blue-600 dark:border-blue-500',
+      warning: 'border-amber-700 dark:border-amber-600',
+      info: 'border-lime-800 dark:border-lime-700',
     },
     text: {
       contrast: 'dark:text-slate-100',
       success: 'text-emerald-600 dark:text-emerald-500',
       danger: 'text-red-600 dark:text-red-500',
-      warning: 'text-yellow-600 dark:text-yellow-500',
-      info: 'text-blue-600 dark:text-blue-500',
+      warning: 'text-amber-500 dark:text-amber-400',
+      info: 'text-lime-700 dark:text-lime-300',
     },
     outlineHover: {
       contrast:
@@ -104,7 +105,7 @@ export const getButtonColor = (color, isOutlined, hasHover, isActive = false) =>
         'hover:bg-red-600 hover:text-white hover:text-white dark:hover:text-white dark:hover:border-red-600',
       warning:
         'hover:bg-yellow-600 hover:text-white hover:text-white dark:hover:text-white dark:hover:border-yellow-600',
-      info: 'hover:bg-blue-600 hover:text-white dark:hover:text-white dark:hover:border-blue-600',
+      info: 'hover:bg-lime-800 hover:text-amber-50 dark:hover:text-amber-50 dark:hover:border-lime-700',
     },
   }
 

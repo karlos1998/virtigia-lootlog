@@ -7,7 +7,316 @@
 @import './_scrollbars.css';
 @import './_table.css';
 
-@import './styles/_basic.css';
-@import './styles/_white.css';
-
 @config '../../tailwind.config.js';
+
+:root {
+  --game-green-950: #031306;
+  --game-green-900: #071f0a;
+  --game-green-850: #0a2a0d;
+  --game-green-800: #103514;
+  --game-green-700: #1d5121;
+  --game-gold-500: #d6b35c;
+  --game-gold-400: #f0d47a;
+  --game-gold-300: #ffe69b;
+  --game-brown-900: #2b1407;
+  --game-brown-800: #4c2410;
+  --game-brown-700: #763b1d;
+  --game-red-700: #991b1b;
+  --game-border: rgba(198, 153, 72, 0.55);
+  --game-border-muted: rgba(112, 90, 45, 0.55);
+  --game-text: #f5e7bc;
+  --game-text-muted: #c2aa76;
+  --game-shadow: rgba(0, 0, 0, 0.52);
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--game-text);
+  background:
+    linear-gradient(135deg, rgba(255, 230, 155, 0.035) 0 1px, transparent 1px 18px),
+    linear-gradient(45deg, rgba(255, 230, 155, 0.025) 0 1px, transparent 1px 22px),
+    linear-gradient(180deg, #010501, #061907 42%, #020703);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.lootlog-shell {
+  position: relative;
+  min-height: 100vh;
+  color: var(--game-text);
+  background:
+    linear-gradient(135deg, rgba(255, 226, 139, 0.055) 0 1px, transparent 1px 26px),
+    linear-gradient(45deg, rgba(0, 0, 0, 0.2) 0 1px, transparent 1px 18px),
+    radial-gradient(ellipse at top, rgba(34, 88, 31, 0.45), transparent 34rem),
+    linear-gradient(180deg, #031104 0%, #08240b 52%, #020903 100%);
+}
+
+.lootlog-shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 229, 141, 0.04), transparent 18%, transparent 82%, rgba(255, 229, 141, 0.04)),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 5px);
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+
+.lootlog-main {
+  position: relative;
+  z-index: 1;
+}
+
+.game-navbar {
+  border-bottom: 1px solid var(--game-border);
+  background:
+    linear-gradient(180deg, rgba(118, 59, 29, 0.96), rgba(54, 24, 10, 0.96) 52%, rgba(14, 41, 12, 0.96));
+  box-shadow: 0 8px 24px var(--game-shadow), inset 0 -1px 0 rgba(255, 230, 155, 0.16);
+  color: var(--game-gold-300);
+}
+
+.game-navbar-title {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 0.65rem;
+  padding: 0 0.9rem;
+  color: var(--game-gold-300);
+}
+
+.game-navbar-title strong,
+.game-navbar-title span {
+  display: block;
+}
+
+.game-navbar-title strong {
+  color: #fff5cf;
+  font-weight: 900;
+  line-height: 1.05;
+  text-shadow: 0 1px 0 #2a1207;
+}
+
+.game-navbar-title span {
+  color: var(--game-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.game-navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+  padding: 0 0.9rem;
+  color: var(--game-text);
+  font-weight: 800;
+}
+
+.game-navbar-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.15rem;
+  padding: 0 0.7rem;
+  border: 1px solid rgba(255, 215, 128, 0.4);
+  border-radius: 4px;
+  color: #ffe2a4;
+  background: linear-gradient(180deg, #7f1d1d, #4b0d0d);
+  box-shadow: inset 0 1px 0 rgba(255, 238, 198, 0.18), 0 2px 8px rgba(0, 0, 0, 0.28);
+}
+
+.game-navbar-logout:hover {
+  background: linear-gradient(180deg, #a12525, #5c1111);
+}
+
+.navbar-item-label {
+  color: var(--game-gold-300);
+}
+
+.navbar-item-label:hover {
+  color: #fff8d7;
+}
+
+.aside {
+  border: 1px solid var(--game-border);
+  background:
+    linear-gradient(180deg, rgba(18, 55, 16, 0.98), rgba(6, 25, 7, 0.98)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 10px);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.78), 0 18px 36px var(--game-shadow), inset 0 0 32px rgba(0, 0, 0, 0.42);
+}
+
+.aside-brand {
+  border-bottom: 1px solid var(--game-border);
+  background:
+    linear-gradient(180deg, rgba(123, 61, 26, 0.95), rgba(63, 31, 13, 0.95) 56%, rgba(13, 42, 12, 0.95));
+  color: #fff4ca;
+  text-shadow: 0 1px 0 #2a1207;
+}
+
+.aside-brand b,
+.aside-brand span {
+  display: block;
+}
+
+.aside-brand b {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.aside-brand span {
+  color: var(--game-gold-400);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.aside-menu-item {
+  color: var(--game-text-muted);
+  font-weight: 800;
+}
+
+.aside-menu-item:hover,
+.aside-menu-item-active {
+  color: var(--game-gold-300);
+  background: linear-gradient(90deg, rgba(214, 179, 92, 0.16), rgba(214, 179, 92, 0.02));
+}
+
+.aside-menu-dropdown {
+  border-top: 1px solid rgba(214, 179, 92, 0.15);
+  border-bottom: 1px solid rgba(214, 179, 92, 0.15);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.game-card {
+  border: 1px solid var(--game-border);
+  color: var(--game-text);
+  background:
+    linear-gradient(180deg, rgba(16, 53, 20, 0.94), rgba(5, 20, 7, 0.97)),
+    repeating-linear-gradient(135deg, rgba(255, 236, 178, 0.025) 0 1px, transparent 1px 12px);
+  box-shadow: 0 12px 30px var(--game-shadow), inset 0 0 20px rgba(0, 0, 0, 0.28);
+}
+
+.game-card-modal {
+  background:
+    linear-gradient(180deg, rgba(21, 59, 22, 0.98), rgba(5, 18, 6, 0.99));
+}
+
+.game-card strong,
+.game-card small,
+.game-card label,
+.game-card p {
+  color: inherit;
+}
+
+.game-card .text-gray-500,
+.game-card .text-gray-600,
+.game-card .text-gray-700,
+.game-card .dark\:text-slate-400,
+.game-card .dark\:text-slate-500 {
+  color: var(--game-text-muted) !important;
+}
+
+.table-pagination {
+  border-top: 1px solid rgba(214, 179, 92, 0.2);
+  color: var(--game-text-muted);
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.table-pagination small {
+  color: var(--game-gold-400);
+  font-weight: 800;
+}
+
+.table-pagination-ellipsis {
+  color: var(--game-text-muted);
+}
+
+.lootlog-section-title {
+  min-height: 3.2rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--game-border);
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgba(104, 51, 22, 0.94), rgba(43, 20, 8, 0.95)),
+    linear-gradient(90deg, rgba(255, 230, 155, 0.09), transparent);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 240, 190, 0.16);
+}
+
+.lootlog-section-title h1 {
+  color: #fff1be;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-shadow: 0 1px 0 #2a1207;
+}
+
+.game-login-bg {
+  background:
+    linear-gradient(135deg, rgba(255, 226, 139, 0.065) 0 1px, transparent 1px 22px),
+    linear-gradient(45deg, rgba(0, 0, 0, 0.2) 0 1px, transparent 1px 18px),
+    radial-gradient(ellipse at center, rgba(38, 117, 38, 0.5), transparent 30rem),
+    linear-gradient(180deg, #031105, #0b2f0f 48%, #020802);
+}
+
+.lootlog-login-screen .game-card {
+  min-width: min(28rem, calc(100vw - 2rem));
+}
+
+.lootlog-login-screen h1,
+.lootlog-login-screen h2 {
+  text-shadow: 0 2px 0 #2b1407, 0 0 18px rgba(255, 230, 155, 0.18);
+}
+
+input,
+select,
+textarea {
+  border-color: rgba(214, 179, 92, 0.46) !important;
+  color: #f7e9bd;
+  background-color: rgba(2, 14, 4, 0.72) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(194, 170, 118, 0.78);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--game-gold-400) !important;
+  box-shadow: 0 0 0 3px rgba(214, 179, 92, 0.2) !important;
+}
+
+.dropdown-item {
+  color: var(--game-text) !important;
+}
+
+.dropdown-item:hover {
+  color: #fff4c6 !important;
+  background: rgba(214, 179, 92, 0.12) !important;
+}
+
+@media (max-width: 760px) {
+  .game-navbar-title span,
+  .game-navbar-user > span {
+    display: none;
+  }
+
+  .game-navbar-logout {
+    padding-inline: 0.55rem;
+  }
+}

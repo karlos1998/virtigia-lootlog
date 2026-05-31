@@ -6,11 +6,11 @@
   }
 
   & input[type='checkbox'] + .check {
-    @apply border-gray-700 border transition-colors duration-200 dark:bg-slate-800;
+    @apply border-lime-900 border transition-colors duration-200 dark:bg-green-950;
   }
 
   & input[type='checkbox']:focus + .check {
-    @apply ring-3 ring-blue-700;
+    @apply ring-3 ring-lime-700;
   }
 
   & input[type='checkbox'] + .check {
@@ -30,7 +30,7 @@
   }
 
   & input[type='checkbox']:checked + .check {
-    @apply bg-blue-600 border-blue-600;
+    @apply bg-lime-800 border-lime-600;
   }
 }
 
@@ -42,11 +42,11 @@
   }
 
   & input[type='radio'] + .check {
-    @apply border-gray-700 border transition-colors duration-200 dark:bg-slate-800;
+    @apply border-lime-900 border transition-colors duration-200 dark:bg-green-950;
   }
 
   & input[type='radio']:focus + .check {
-    @apply ring-3 ring-blue-700;
+    @apply ring-3 ring-lime-700;
   }
 
   & input[type='radio'] + .check {
@@ -66,7 +66,7 @@
   }
 
   & input[type='radio']:checked + .check {
-    @apply bg-blue-600 border-blue-600;
+    @apply bg-lime-800 border-lime-600;
   }
 }
 
@@ -78,11 +78,11 @@
   }
 
   & input[type='checkbox'] + .check {
-    @apply border-gray-700 border transition-colors duration-200 dark:bg-slate-800;
+    @apply border-lime-900 border transition-colors duration-200 dark:bg-green-950;
   }
 
   & input[type='checkbox']:focus + .check {
-    @apply ring-3 ring-blue-700;
+    @apply ring-3 ring-lime-700;
   }
 
   & input[type='checkbox'] + .check {
@@ -98,43 +98,43 @@
   }
 
   & input[type='checkbox']:checked + .check {
-    @apply bg-blue-600 border-blue-600;
+    @apply bg-lime-800 border-lime-600;
   }
 
   & input[type='checkbox'] + .check:before {
     content: '';
-    @apply block w-5 h-5 bg-white border border-gray-700;
+    @apply block w-5 h-5 bg-amber-100 border border-lime-900;
   }
 
   & input[type='checkbox']:checked + .check:before {
     transform: translate3d(110%, 0, 0);
-    @apply border-blue-600;
+    @apply border-lime-600;
   }
 }
 
 @utility check {
   .checkbox input[type='checkbox'] + & {
-    @apply border-gray-700 border transition-colors duration-200 dark:bg-slate-800;
+    @apply border-lime-900 border transition-colors duration-200 dark:bg-green-950;
   }
 
   .radio input[type='radio'] + & {
-    @apply border-gray-700 border transition-colors duration-200 dark:bg-slate-800;
+    @apply border-lime-900 border transition-colors duration-200 dark:bg-green-950;
   }
 
   .switch input[type='checkbox'] + & {
-    @apply border-gray-700 border transition-colors duration-200 dark:bg-slate-800;
+    @apply border-lime-900 border transition-colors duration-200 dark:bg-green-950;
   }
 
   .checkbox input[type='checkbox']:focus + & {
-    @apply ring-3 ring-blue-700;
+    @apply ring-3 ring-lime-700;
   }
 
   .radio input[type='radio']:focus + & {
-    @apply ring-3 ring-blue-700;
+    @apply ring-3 ring-lime-700;
   }
 
   .switch input[type='checkbox']:focus + & {
-    @apply ring-3 ring-blue-700;
+    @apply ring-3 ring-lime-700;
   }
 
   .checkbox input[type='checkbox'] + & {
@@ -182,24 +182,24 @@
   }
 
   .switch input[type='checkbox']:checked + & {
-    @apply bg-blue-600 border-blue-600;
+    @apply bg-lime-800 border-lime-600;
   }
 
   .checkbox input[type='checkbox']:checked + & {
-    @apply bg-blue-600 border-blue-600;
+    @apply bg-lime-800 border-lime-600;
   }
 
   .radio input[type='radio']:checked + & {
-    @apply bg-blue-600 border-blue-600;
+    @apply bg-lime-800 border-lime-600;
   }
 
   .switch input[type='checkbox'] + &:before {
     content: '';
-    @apply block w-5 h-5 bg-white border border-gray-700;
+    @apply block w-5 h-5 bg-amber-100 border border-lime-900;
   }
 
   .switch input[type='checkbox']:checked + &:before {
     transform: translate3d(110%, 0, 0);
-    @apply border-blue-600;
+    @apply border-lime-600;
   }
 }
