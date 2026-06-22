@@ -273,6 +273,23 @@ export interface PageLootlogBattleDateDTO {
   empty?: boolean;
 }
 
+export interface LootlogNpcKillCounterDTO {
+  characterId: string;
+  characterName: string;
+  characterSrc?: string | null;
+  /** @format int32 */
+  characterLvl?: number | null;
+  characterProfession?: "p" | "w" | "t" | "h" | "m" | "b" | null;
+  /** @format int32 */
+  totalKills: number;
+}
+
+export interface LootlogNpcDetailsDTO {
+  npc: NpcDTO;
+  killCounterPublic: boolean;
+  killCounters?: LootlogNpcKillCounterDTO[] | null;
+}
+
 import type {
   AxiosInstance,
   AxiosRequestConfig,
@@ -563,6 +580,13 @@ export class Api<
      */
     getAll1: (
       query?: {
+        legendaryOnly?: boolean;
+        heroicOnly?: boolean;
+        characterName?: string;
+        npcName?: string;
+        onlyMine?: boolean;
+        /** @format int64 */
+        npcId?: number;
         /**
          * Zero-based page index (0..N)
          * @min 0
@@ -576,7 +600,7 @@ export class Api<
          */
         size?: number;
         /** Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-        sort?: string[];
+        sort?: string | string[];
       },
       params: RequestParams = {},
     ) =>
@@ -584,6 +608,23 @@ export class Api<
         path: `/lootlog/api/battle-loots`,
         method: "GET",
         query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description NPC details with public kill counter information when enabled for this world
+     *
+     * @tags NPC
+     * @name GetNpcDetails
+     * @summary NPC details
+     * @request GET:/lootlog/api/npcs/{npcId}
+     * @secure
+     */
+    getNpcDetails: (npcId: number | string, params: RequestParams = {}) =>
+      this.request<LootlogNpcDetailsDTO, any>({
+        path: `/lootlog/api/npcs/${npcId}`,
+        method: "GET",
         secure: true,
         ...params,
       }),

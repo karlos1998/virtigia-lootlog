@@ -25,6 +25,14 @@ const routes = [
   },
   {
     meta: {
+      title: 'Mob',
+    },
+    path: '/npc/:id',
+    name: 'npc-details',
+    component: () => import('@/pages/dashboard/NpcDetailsView.vue'),
+  },
+  {
+    meta: {
       title: 'Logowanie',
     },
     path: '/login',

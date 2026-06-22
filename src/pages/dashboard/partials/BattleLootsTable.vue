@@ -2,12 +2,20 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { mdiClose } from '@mdi/js'
-import { LootItemDTO, LootlogBattleLootDTO, PageLootlogBattleLootDTO } from '@/api/api'
+import { LootItemDTO, LootlogBattleLootDTO, NpcDTO, PageLootlogBattleLootDTO } from '@/api/api'
 import AdvanceTable from '@/components/AdvanceTable.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import CardBoxModal from '@/components/CardBoxModal.vue'
 import Column from '@/components/Column.vue'
 import { ApiService } from '@/services/api.service'
+
+const props = withDefaults(defineProps<{
+  npcId?: string | number | null
+  compact?: boolean
+}>(), {
+  npcId: null,
+  compact: false,
+})
 
 const apiService = new ApiService()
 const route = useRoute()
@@ -36,6 +44,7 @@ type BattleLootQuery = {
   onlyMine?: boolean
   characterName?: string
   npcName?: string
+  npcId?: number
 }
 
 type SlotProps = {
@@ -44,6 +53,10 @@ type SlotProps = {
 }
 
 const activeFiltersCount = computed(() => {
+  if (isNpcScoped.value) {
+    return 0
+  }
+
   return [
     legendaryOnly.value,
     heroicOnly.value,
@@ -63,7 +76,13 @@ const generateUniqueColor = (id: string) => {
   return `hsl(${h}, 76%, 62%)`
 }
 
+const isNpcScoped = computed(() => props.npcId !== null && props.npcId !== undefined && props.npcId !== '')
+
 const hydrateFiltersFromRoute = () => {
+  if (isNpcScoped.value) {
+    return
+  }
+
   suspendFilterWatch.value = true
   legendaryOnly.value = route.query.legendaryOnly === 'true'
   heroicOnly.value = route.query.heroicOnly === 'true'
@@ -77,7 +96,7 @@ const hydrateFiltersFromRoute = () => {
 }
 
 const syncFiltersToRoute = () => {
-  if (suspendFilterWatch.value) {
+  if (suspendFilterWatch.value || isNpcScoped.value) {
     return
   }
 
@@ -112,6 +131,11 @@ const buildQuery = (page: number): BattleLootQuery => {
     page,
     size: 30,
     sort: 'createdAt,desc',
+  }
+
+  if (isNpcScoped.value) {
+    query.npcId = Number(props.npcId)
+    return query
   }
 
   if (legendaryOnly.value) {
@@ -154,6 +178,10 @@ const refresh = () => {
 }
 
 const clearFilters = () => {
+  if (isNpcScoped.value) {
+    return
+  }
+
   suspendFilterWatch.value = true
   legendaryOnly.value = false
   heroicOnly.value = false
@@ -194,13 +222,43 @@ const getCharacterColor = (row: LootlogBattleLootDTO, characterId: string) => {
   return assignedItem ? generateUniqueColor(characterId) : ''
 }
 
-const getLootItemColor = (row: LootlogBattleLootDTO, itemId: string) => {
-  if (!row.assignedItems) {
-    return ''
-  }
+const getAssignedCharacterIds = (row: LootlogBattleLootDTO) => {
+  const characterIds: string[] = []
+  row.assignedItems?.forEach((item) => {
+    if (!characterIds.includes(item.characterId)) {
+      characterIds.push(item.characterId)
+    }
+  })
 
-  const assignedItem = row.assignedItems.find((item) => item.lootItemId === itemId)
-  return assignedItem ? generateUniqueColor(assignedItem.characterId) : ''
+  return characterIds
+}
+
+const getAssignmentLabel = (row: LootlogBattleLootDTO, characterId: string) => {
+  const index = getAssignedCharacterIds(row).indexOf(characterId)
+  return index >= 0 ? String(index + 1) : ''
+}
+
+const getAssignmentBadgeStyle = (characterId: string) => ({
+  '--assignment-color': generateUniqueColor(characterId),
+})
+
+const getLootItemAssignedCharacterId = (row: LootlogBattleLootDTO, itemId: string) => {
+  return row.assignedItems?.find((item) => item.lootItemId === itemId)?.characterId || ''
+}
+
+const getLootItemAssignmentLabel = (row: LootlogBattleLootDTO, itemId: string) => {
+  const characterId = getLootItemAssignedCharacterId(row, itemId)
+  return characterId ? getAssignmentLabel(row, characterId) : ''
+}
+
+const getLootItemBadgeStyle = (row: LootlogBattleLootDTO, itemId: string) => {
+  const characterId = getLootItemAssignedCharacterId(row, itemId)
+  return characterId ? getAssignmentBadgeStyle(characterId) : {}
+}
+
+const getItemRarityClass = (item: LootItemDTO) => {
+  const rarity = item.item.rarity
+  return rarity && ['legendary', 'heroic', 'unique'].includes(rarity) ? `item-rarity-${rarity}` : ''
 }
 
 const showItemDetails = (item: LootItemDTO, row: LootlogBattleLootDTO) => {
@@ -222,6 +280,10 @@ const getRowClass = (row: LootlogBattleLootDTO) => {
   return hasLegendaryItems(row) ? 'legendary-row' : ''
 }
 
+const goToNpc = (npc: NpcDTO) => {
+  router.push({ name: 'npc-details', params: { id: npc.id } })
+}
+
 onMounted(() => {
   hydrateFiltersFromRoute()
   loadTable()
@@ -236,9 +298,14 @@ onBeforeUnmount(() => {
 watch([characterName, npcName], scheduleTextFilterReload)
 watch([legendaryOnly, heroicOnly, onlyMine], syncFiltersToRoute)
 watch(() => route.query, () => {
+  if (isNpcScoped.value) {
+    return
+  }
+
   hydrateFiltersFromRoute()
   loadTable(0)
 })
+watch(() => props.npcId, () => loadTable(0))
 
 defineExpose({ refresh })
 </script>
@@ -257,7 +324,7 @@ defineExpose({ refresh })
     </span>
   </div>
 
-  <div class="loot-filter-panel">
+  <div v-if="!isNpcScoped" class="loot-filter-panel">
     <div class="loot-filter-grid">
       <label class="loot-filter-field">
         <span>Gracz</span>
@@ -303,13 +370,20 @@ defineExpose({ refresh })
   <AdvanceTable :data="tableData || { content: [] }" :row-class="getRowClass" @change-page="changePage">
     <Column header="Moby" name="npcs">
       <template #body="{ row }: SlotProps">
-        <img
+        <button
           v-for="npc in row.npcs"
           :key="npc.id"
           v-tip.npc="npc"
-          class="battle-npc-sprite"
-          :src="`${npc.src}`"
-        />
+          class="battle-npc-link"
+          type="button"
+          :aria-label="`Pokaż historię moba ${npc.name}`"
+          @click="goToNpc(npc)"
+        >
+          <img
+            class="battle-npc-sprite"
+            :src="`${npc.src}`"
+          />
+        </button>
       </template>
     </Column>
 
@@ -319,15 +393,23 @@ defineExpose({ refresh })
           <div
             v-for="character in row.characters"
             :key="character.id"
-            v-tip.other="{...character, level: character.lvl}"
-            class="battle-character-sprite"
-            :class="{ 'loot-highlight': getCharacterColor(row, character.id) }"
-            :style="{
-              backgroundImage: `url(${character.src})`,
-              '--highlight-color': getCharacterColor(row, character.id),
-              boxShadow: getCharacterColor(row, character.id) ? `0 0 0 2px ${getCharacterColor(row, character.id)}, 0 0 10px ${getCharacterColor(row, character.id)}` : '',
-            }"
-          />
+            class="loot-sprite-stack"
+          >
+            <div
+              v-tip.other="{...character, level: character.lvl}"
+              class="battle-character-sprite"
+              :style="{
+                backgroundImage: `url(${character.src})`,
+              }"
+            />
+            <span
+              v-if="getCharacterColor(row, character.id)"
+              class="loot-assignment-badge"
+              :style="getAssignmentBadgeStyle(character.id)"
+            >
+              {{ getAssignmentLabel(row, character.id) }}
+            </span>
+          </div>
         </div>
       </template>
     </Column>
@@ -338,16 +420,25 @@ defineExpose({ refresh })
           <div
             v-for="item in row.items"
             :key="item.id"
-            v-tip.item="item.item"
-            class="battle-item-sprite"
-            :class="{ 'loot-highlight': !!getLootItemColor(row, item.id) }"
-            :style="{
-              backgroundImage: `url(${item.item.src})`,
-              '--highlight-color': getLootItemColor(row, item.id),
-              boxShadow: getLootItemColor(row, item.id) ? `0 0 0 2px ${getLootItemColor(row, item.id)}, 0 0 10px ${getLootItemColor(row, item.id)}` : '',
-            }"
-            @click="showItemDetails(item, row)"
-          />
+            class="loot-sprite-stack"
+          >
+            <div
+              v-tip.item="item.item"
+              class="battle-item-sprite"
+              :class="getItemRarityClass(item)"
+              :style="{
+                backgroundImage: `url(${item.item.src})`,
+              }"
+              @click="showItemDetails(item, row)"
+            />
+            <span
+              v-if="getLootItemAssignmentLabel(row, item.id)"
+              class="loot-assignment-badge"
+              :style="getLootItemBadgeStyle(row, item.id)"
+            >
+              {{ getLootItemAssignmentLabel(row, item.id) }}
+            </span>
+          </div>
         </div>
         <div v-else>-</div>
       </template>
@@ -442,6 +533,7 @@ defineExpose({ refresh })
   width: 32px;
   height: 32px;
   cursor: pointer;
+  border: 1px solid transparent;
   background-position: center;
   background-size: contain;
 }
@@ -463,7 +555,34 @@ defineExpose({ refresh })
 .item-wrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.loot-sprite-stack {
+  min-width: 36px;
+  display: inline-flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.battle-npc-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px;
+  padding: 2px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.16s ease, filter 0.16s ease;
+}
+
+.battle-npc-link:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
 }
 
 .battle-character-sprite,
@@ -471,15 +590,44 @@ defineExpose({ refresh })
 .battle-npc-sprite {
   margin: 2px;
   padding: 2px;
-  border: 1px solid rgba(214, 179, 92, 0.3);
   border-radius: 4px;
   background-color: rgba(0, 0, 0, 0.28);
   background-repeat: no-repeat;
 }
 
 .battle-item-sprite:hover {
-  border-color: var(--game-gold-300);
+  filter: brightness(1.12);
   transform: translateY(-1px);
+}
+
+.battle-item-sprite.item-rarity-legendary {
+  border-color: #ff8a2a;
+  box-shadow: 0 0 8px rgba(255, 138, 42, 0.48);
+}
+
+.battle-item-sprite.item-rarity-heroic {
+  border-color: #58c7ff;
+  box-shadow: 0 0 8px rgba(88, 199, 255, 0.42);
+}
+
+.battle-item-sprite.item-rarity-unique {
+  border-color: #d8c46a;
+  box-shadow: 0 0 6px rgba(216, 196, 106, 0.26);
+}
+
+.loot-assignment-badge {
+  min-width: 18px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  color: #081005;
+  background: var(--assignment-color);
+  box-shadow: 0 0 7px color-mix(in srgb, var(--assignment-color), transparent 35%);
+  font-size: 0.62rem;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .loot-filter-panel {
@@ -654,40 +802,6 @@ defineExpose({ refresh })
   margin: 0 auto;
   color: var(--game-text-muted);
   line-height: 1.5;
-}
-
-.loot-highlight {
-  position: relative;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.loot-highlight::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  z-index: -1;
-  border-radius: 6px;
-  background: var(--highlight-color);
-  opacity: 0.18;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.16;
-  }
-
-  50% {
-    transform: scale(1.05);
-    opacity: 0.32;
-  }
-
-  100% {
-    transform: scale(1);
-    opacity: 0.16;
-  }
 }
 
 :deep(.legendary-row) {

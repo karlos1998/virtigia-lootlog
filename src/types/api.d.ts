@@ -80,6 +80,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/lootlog/api/npcs/{npcId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * NPC details
+         * @description NPC details with public kill counter information when enabled for this world
+         */
+        get: operations["getDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/lootlog/api/battle-dates": {
         parameters: {
             query?: never;
@@ -295,6 +315,21 @@ export interface components {
             sort?: components["schemas"]["SortObject"];
             empty?: boolean;
         };
+        LootlogNpcKillCounterDTO: {
+            characterId: string;
+            characterName: string;
+            characterSrc?: string;
+            /** Format: int32 */
+            characterLvl?: number;
+            characterProfession?: "p" | "w" | "t" | "h" | "m" | "b";
+            /** Format: int32 */
+            totalKills: number;
+        };
+        LootlogNpcDetailsDTO: {
+            npc: components["schemas"]["NpcDTO"];
+            killCounterPublic: boolean;
+            killCounters?: components["schemas"]["LootlogNpcKillCounterDTO"][];
+        };
         LootlogBattleDateDTO: {
             id: string;
             battleId: string;
@@ -413,6 +448,13 @@ export interface operations {
     getAll_1: {
         parameters: {
             query?: {
+                legendaryOnly?: boolean;
+                heroicOnly?: boolean;
+                characterName?: string;
+                npcName?: string;
+                onlyMine?: boolean;
+                /** Format: int64 */
+                npcId?: number;
                 /** @description Zero-based page index (0..N) */
                 page?: number;
                 /** @description The size of the page to be returned */
@@ -433,6 +475,29 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageLootlogBattleLootDTO"];
+                };
+            };
+        };
+    };
+    getDetails: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** Format: int64 */
+                npcId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["LootlogNpcDetailsDTO"];
                 };
             };
         };
